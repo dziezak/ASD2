@@ -46,8 +46,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAzwAwAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-20T16:27:40.525Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-20T16:27:40.525Z"
             },
             {
               "$type": "Document",
@@ -55,9 +54,9 @@
               "Title": "CrossoutChecker.cs",
               "DocumentMoniker": "C:\\dev\\GitHub\\CPP\\Politechnika\\ASD\\ASD2\\Skreslaie_wzorow\\CrossoutChecker.cs",
               "RelativeDocumentMoniker": "CrossoutChecker.cs",
-              "ToolTip": "C:\\dev\\GitHub\\CPP\\Politechnika\\ASD\\ASD2\\Skreslaie_wzorow\\CrossoutChecker.cs",
-              "RelativeToolTip": "CrossoutChecker.cs",
-              "ViewState": "AgIAAE0AAAAAAAAAAAAAwGQAAAAnAAAAAAAAAA==",
+              "ToolTip": "C:\\dev\\GitHub\\CPP\\Politechnika\\ASD\\ASD2\\Skreslaie_wzorow\\CrossoutChecker.cs*",
+              "RelativeToolTip": "CrossoutChecker.cs*",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAowGgAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-20T16:27:38.414Z",
               "EditorCaption": ""

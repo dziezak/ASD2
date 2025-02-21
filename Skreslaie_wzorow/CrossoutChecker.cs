@@ -61,7 +61,7 @@ namespace ASD
 
             for(int l=1; l<=n; l++)
             {
-                for(int i=0; i+l-1<n; i++)
+                for(int i=0; i+l-1<n; i++) // rozmaptrujemy przedzial [i,j] o dlugosci l
                 {
                     int j = i + l - 1; // tu -1 bo jak kalendarz
                     if(((l == 1 ) && comparePattern(patterns, sequence[i])) ||
@@ -69,7 +69,7 @@ namespace ASD
                     {
                         erasable[i, j] = true;
                         minCrossouts[i, j] = 1;
-                        continue;
+                        //continue;
                     }
 
                     for(int k = i; k<j; k++)
@@ -81,12 +81,12 @@ namespace ASD
                         }
                     }
 
-                    for(int k = i; k < j; k++)
+                    if( i != 0 &&  j != n && i+1 <= j-1)
                     {
-                        if(erasable[i, k] && comparePattern(patterns, sequence[k+1], sequence[j]))
-                        { 
+                        if (erasable[i+1, j - 1] && comparePattern( patterns, sequence[i], sequence[j]))
+                        {
                             erasable[i, j] = true;
-                            minCrossouts[i, j] = Math.Min(minCrossouts[i, j], minCrossouts[i, k]+1);
+                            minCrossouts[i, j] = minCrossouts[i - 1, j - 1] + 1;
                         }
                     }
                 }
