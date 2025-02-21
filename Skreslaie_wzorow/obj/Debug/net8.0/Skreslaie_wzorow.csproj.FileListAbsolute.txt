@@ -1,0 +1,15 @@
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\bin\Debug\net8.0\Skreslaie_wzorow.exe
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\bin\Debug\net8.0\Skreslaie_wzorow.deps.json
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\bin\Debug\net8.0\Skreslaie_wzorow.runtimeconfig.json
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\bin\Debug\net8.0\Skreslaie_wzorow.dll
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\bin\Debug\net8.0\Skreslaie_wzorow.pdb
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.GeneratedMSBuildEditorConfig.editorconfig
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.AssemblyInfoInputs.cache
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.AssemblyInfo.cs
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.csproj.CoreCompileInputs.cache
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.sourcelink.json
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.dll
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\refint\Skreslaie_wzorow.dll
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.pdb
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\Skreslaie_wzorow.genruntimeconfig.cache
+C:\dev\GitHub\CPP\Politechnika\ASD\ASD2\Skreslaie_wzorow\obj\Debug\net8.0\ref\Skreslaie_wzorow.dll

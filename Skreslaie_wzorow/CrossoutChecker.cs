@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Runtime.Intrinsics.Arm;
 
 namespace ASD
 {
     class CrossoutChecker
     {
+        private bool[,]? erasable; // czy możliwe
+        private int[,]? minCrossouts; //minimalna ilosc operacji aby wytrzec 
+        private int[,]? minRemainder; //obliczy najmniejszy pozostaly wzorzec
         /// <summary>
         /// Sprawdza, czy podana lista wzorców zawiera wzorzec x
         /// </summary>
@@ -47,8 +51,59 @@ namespace ASD
         /// <returns></returns>
         public bool Erasable(char[] sequence, char[][] patterns, out int crossoutsNumber)
         {
-            crossoutsNumber = -1;
-            return false;
+            int n = sequence.Length;
+            erasable = new bool[n, n];
+            minCrossouts = new int[n, n];
+
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    minCrossouts[i, j] = int.MaxValue;
+
+            for(int l=1; l<=n; l++)
+            {
+                for(int i=0; i+l-1<n; i++)
+                {
+                    int j = i + l - 1; // tu -1 bo jak kalendarz
+                    if(((l == 1 ) && comparePattern(patterns, sequence[i])) ||
+                        ((l == 2) && comparePattern(patterns, sequence[i], sequence[i+1])))
+                    {
+                        erasable[i, j] = true;
+                        minCrossouts[i, j] = 1;
+                        continue;
+                    }
+
+                    for(int k = i; k<j; k++)
+                    {
+                        if(erasable[i, k] && erasable[k+1, j])
+                        {
+                            erasable[i, j] = true;
+                            minCrossouts[i, j] = minCrossouts[i, k] + minCrossouts[k + 1, j];
+                        }
+                    }
+
+                    for(int k = i; k < j; k++)
+                    {
+                        if(erasable[i, k] && comparePattern(patterns, sequence[k+1], sequence[j]))
+                        { 
+                            erasable[i, j] = true;
+                            minCrossouts[i, j] = Math.Min(minCrossouts[i, j], minCrossouts[i, k]+1);
+                        }
+                    }
+                }
+            }
+            for(int i= 0; i < n; i++)
+            {
+                for(int j= 0; j < n; j++)
+                {
+                    if(erasable[i, j])
+                        Console.Write("1 ");
+                    else 
+                        Console.Write("0 ");
+                }
+                Console.Write('\n');
+            }
+            crossoutsNumber = erasable[0, n - 1] ? minCrossouts[0, n - 1] : int.MaxValue;
+            return erasable[0, n - 1];
         }
 
         /// <summary>
@@ -60,10 +115,29 @@ namespace ASD
         /// <returns></returns>
         public int MinimumRemainder(char[] sequence, char[][] patterns)
         {
-            return -1;
+            int n = sequence.Length;
+            minRemainder = new int[n,n];
+            for (int l = 1; l <= n; l++)
+            {
+                for(int i = 0; i + l -1 <n; i++)
+                {
+                    int j = i + l - 1;
+                    if (((l == 1) && comparePattern(patterns, sequence[i])) ||
+                        ((l == 2) && comparePattern(patterns, sequence[i], sequence[i+1])))
+                    {
+                        minRemainder[i, j] = 0;
+                    }
+                    else
+                    {
+                        minRemainder[i, j] = l;
+                        for(int k = i; k <j; k++)
+                        {
+                            minRemainder[i, j] = Math.Min(minRemainder[i, j], minRemainder[i, k] + minRemainder[k + 1, j]);
+                        }
+                    }
+                }
+            }
+            return minRemainder[0, n - 1];
         }
-
-        // można dopisać metody pomocnicze
-
     }
 }
