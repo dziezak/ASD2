@@ -86,7 +86,7 @@ namespace ASD
                         if(erasable[i, k] && erasable[k+1, j])
                         {
                             erasable[i, j] = true;
-                            minCrossouts[i, j] = minCrossouts[i, k] + minCrossouts[k + 1, j];
+                            minCrossouts[i, j] = Math.Min(minCrossouts[i, j], minCrossouts[i, k] + minCrossouts[k + 1, j]);
                         }
                     }
 
