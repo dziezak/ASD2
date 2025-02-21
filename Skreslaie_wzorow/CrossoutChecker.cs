@@ -51,9 +51,18 @@ namespace ASD
         /// <returns></returns>
         public bool Erasable(char[] sequence, char[][] patterns, out int crossoutsNumber)
         {
+            bool wys = false;
             int n = sequence.Length;
             erasable = new bool[n, n];
             minCrossouts = new int[n, n];
+
+            if (wys)
+            {
+                Console.WriteLine("To jest sequence:"); 
+                for(int i=0; i<n; i++)
+                    Console.Write(sequence[i]);
+                Console.WriteLine();
+            }
 
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
@@ -81,27 +90,29 @@ namespace ASD
                         }
                     }
 
-                    if( i != 0 &&  j != n && i+1 <= j-1)
+                    if( i<j && i+1 <= j-1)
                     {
                         if (erasable[i+1, j - 1] && comparePattern( patterns, sequence[i], sequence[j]))
                         {
                             erasable[i, j] = true;
-                            minCrossouts[i, j] = minCrossouts[i - 1, j - 1] + 1;
+                            minCrossouts[i, j] = minCrossouts[i + 1, j - 1] + 1;
                         }
                     }
                 }
             }
-            for(int i= 0; i < n; i++)
-            {
-                for(int j= 0; j < n; j++)
+            if(wys) 
+                for(int i= 0; i < n; i++)
                 {
-                    if(erasable[i, j])
-                        Console.Write("1 ");
-                    else 
-                        Console.Write("0 ");
+                    for(int j= 0; j < n; j++)
+                    {
+                        if(erasable[i, j])
+                            Console.Write("1 ");
+                        else 
+                            Console.Write("0 ");
+                    }
+                    Console.Write('\n');
                 }
-                Console.Write('\n');
-            }
+            
             crossoutsNumber = erasable[0, n - 1] ? minCrossouts[0, n - 1] : int.MaxValue;
             return erasable[0, n - 1];
         }
