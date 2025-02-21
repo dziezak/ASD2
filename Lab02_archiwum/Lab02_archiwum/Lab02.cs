@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization.Metadata;
 
@@ -111,8 +113,68 @@ namespace ASD
         /// <param name="m">szerokość prostokąta</param>
         /// <param name="moves">tablica z dostępnymi ruchami i ich kosztami (di - o ile zwiększamy numer wiersza, dj - o ile zwiększamy numer kolumnj, cost - koszt ruchu)</param>
         /// <returns>(bool result, int cost, (int, int)[] path) - result ma wartość true jeżeli trasa istnieje, false wpp., cost to minimalny koszt, path to wynikowa trasa</returns>
+        public struct State
+        {
+            public int i, j, usedMoves;
+            public State(int i, int j, int usedMoves)
+            {
+                this.i = i;
+                this.j = j;
+                this.usedMoves = usedMoves;
+            }
+        }
         public (bool result, int cost, (int i, int j)[] pat) Lab02Stage2(int n, int m, ((int di, int dj) step, int cost)[] moves)
         {
+            int movesCount = moves.Length;
+            Dictionary<State, int> moveCost = new();
+            Dictionary<State, State> lastMove = new();
+            PriorityQueue<State, int> prioQ = new();
+
+            moveCost[new State(0, 0, 0)] = 0;
+            prioQ.Enqueue(new State(0, 0, 0), 0);
+
+            while(prioQ.Count > 0)
+            {
+                prioQ.TryDequeue(out var state, out int cost);
+                int i = state.i;
+                int j = state.j;
+                int usedMoves = state.usedMoves;
+
+                if(i == n - 1)
+                {
+                    List<(int, int)> path = new();
+                    while(lastMove.ContainsKey(state))
+                    {
+                        path.Add((state.i, state.j));
+                        state = lastMove[state];
+                    }
+                    path.Add((0, 0));
+                    path.Reverse();
+                    return (true, cost, path.ToArray());
+                }
+
+                for(int moveIdx = 0; moveIdx < movesCount; moveIdx++)
+                {
+                    if ((usedMoves & (1 << moveIdx)) != 0) continue;
+
+                    int ni = i + moves[moveIdx].step.di;
+                    int nj = j + moves[moveIdx].step.dj;
+                    int newUsedMoves = usedMoves | (1 << moveIdx);
+                    int newCost = cost + moves[moveIdx].cost;
+
+                    if (ni < n && nj < m && nj >= 0) 
+                    {
+                        var newState = new State(ni, nj, newUsedMoves);
+                        if (!moveCost.ContainsKey(newState) || newCost < moveCost[newState])
+                        {
+                            moveCost[newState] = newCost;
+                            prioQ.Enqueue(newState, newCost);
+                            lastMove[newState] = state;
+                        }
+                    }
+                }
+            }
+           
             return (false, int.MaxValue, null);
 
         }
