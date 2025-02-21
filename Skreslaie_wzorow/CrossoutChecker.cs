@@ -126,27 +126,59 @@ namespace ASD
         /// <returns></returns>
         public int MinimumRemainder(char[] sequence, char[][] patterns)
         {
+            bool wys = false;
             int n = sequence.Length;
             minRemainder = new int[n,n];
-            for (int l = 1; l <= n; l++)
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    minRemainder[i, j] = int.MaxValue;
+                }
+            }
+
+            for(int i = 0; i < n; i++)
+            {
+                if (comparePattern(patterns, sequence[i]))
+                    minRemainder[i, i] = 0;
+                else
+                    minRemainder[i, i] = 1;
+            }
+
+            for (int l = 2; l <= n; l++)
             {
                 for(int i = 0; i + l -1 <n; i++)
                 {
                     int j = i + l - 1;
-                    if (((l == 1) && comparePattern(patterns, sequence[i])) ||
-                        ((l == 2) && comparePattern(patterns, sequence[i], sequence[i+1])))
+                    if ((l == 2) && comparePattern(patterns, sequence[i], sequence[i+1]))
                     {
                         minRemainder[i, j] = 0;
                     }
-                    else
+
+                    for(int k = i; k<j; k++)
                     {
-                        minRemainder[i, j] = l;
-                        for(int k = i; k <j; k++)
-                        {
+                        if(minRemainder[i, k] != int.MaxValue && minRemainder[k+1, j] != int.MaxValue)
                             minRemainder[i, j] = Math.Min(minRemainder[i, j], minRemainder[i, k] + minRemainder[k + 1, j]);
-                        }
+                    }
+
+                    if (i < j && i + 1 <= j - 1 && minRemainder[i + 1, j - 1] == 0 && comparePattern(patterns, sequence[i], sequence[j]))
+                    {
+                        minRemainder[i, j] = 0;
                     }
                 }
+            }
+            if(wys)
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (minRemainder[i,j] == int.MaxValue)
+                        Console.Write("- ");
+                    else
+                        Console.Write(minRemainder[i,j]+" ");
+                }
+                Console.Write('\n');
             }
             return minRemainder[0, n - 1];
         }

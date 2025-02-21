@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,6 +38,10 @@
             },
             {
               "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
               "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             },
             {
@@ -48,9 +52,9 @@
               "RelativeDocumentMoniker": "CrossoutChecker.cs",
               "ToolTip": "C:\\dev\\GitHub\\CPP\\Politechnika\\ASD\\ASD2\\Skreslaie_wzorow\\CrossoutChecker.cs",
               "RelativeToolTip": "CrossoutChecker.cs",
-              "ViewState": "AgIAADAAAAAAAAAAAAAYwFIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAQwKoAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-21T17:13:03.512Z",
+              "WhenOpened": "2025-02-21T17:32:09.99Z",
               "EditorCaption": ""
             },
             {
@@ -61,7 +65,7 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\dev\\GitHub\\CPP\\Politechnika\\ASD\\ASD2\\Skreslaie_wzorow\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-21T17:13:01.179Z",
               "EditorCaption": ""
