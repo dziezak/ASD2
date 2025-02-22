@@ -60,9 +60,9 @@ namespace Lab02
             Queue<((int, int) position, string path, int patternIndex)> queue = new Queue<((int, int), string, int)>();
             queue.Enqueue(((0, 0), "", 0));
             HashSet<(int, int, int)> visited = new HashSet<(int, int, int)> { (0, 0, 0) };
-            if(n == 1 && m == 1)
+            if(n == 1 && m == 1 && pattern == "")
             {
-                return (true, "");
+                    return (true, "");
             }
 
             if(wys)
