@@ -55,32 +55,40 @@ namespace Lab02
         /// <returns>krotka (bool result, string path) - result ma wartość true jeżeli trasa istnieje, false wpp., path to wynikowa trasa</returns>
         public (bool result, string path) Lab02Stage2(int n, int m, string pattern, (int, int)[] obstacles)
         {
+            bool wys = false;
             HashSet<(int, int)> obstacleSet = new HashSet<(int, int)>(obstacles);
             Queue<((int, int) position, string path, int patternIndex)> queue = new Queue<((int, int), string, int)>();
             queue.Enqueue(((0, 0), "", 0));
             HashSet<(int, int, int)> visited = new HashSet<(int, int, int)> { (0, 0, 0) };
+            if(n == 1 && m == 1)
+            {
+                return (true, "");
+            }
+
+            if(wys)
+                Console.WriteLine(pattern);
 
             while (queue.Count > 0)
             {
                 var (current, path, patternIndex) = queue.Dequeue();
                 int x = current.Item1, y = current.Item2;
 
-                if (x == n - 1 && y == m - 1 && patternIndex == pattern.Length && path.Length == n+m-2)
+                void TryEnqueue(int newX, int newY, string moveChar, int newPatternIndex)
+                {
+                    if (newX < n && newY < m && !obstacleSet.Contains((newX, newY)) && !visited.Contains((newX, newY, newPatternIndex)))
+                    {
+                        visited.Add((newX, newY, newPatternIndex));
+                        if (wys)
+                            Console.WriteLine($"{path + moveChar}, {newX + newY}, {newPatternIndex}");
+                        queue.Enqueue(((newX, newY), path + moveChar, newPatternIndex));
+                    }
+                }
+
+                if (x == n - 1 && y == m - 1 && path.Length == n+m-2 && patternIndex == pattern.Length )
                     return (true, path);
                 if (patternIndex < pattern.Length && path.Length < n+m)
                 {
                     char move = pattern[patternIndex];
-
-                    void TryEnqueue(int newX, int newY, string moveChar, int newPatternIndex)
-                    {
-                        if (newX < n && newY < m && !obstacleSet.Contains((newX, newY)) && !visited.Contains((newX, newY, newPatternIndex)))
-                        {
-                            visited.Add((newX, newY, newPatternIndex));
-                            Console.WriteLine($"{path + moveChar}, {newX + newY}");
-                            queue.Enqueue(((newX, newY), path + moveChar, newPatternIndex));
-                        }
-                    }
-
                     if (move == 'D') TryEnqueue(x + 1, y, "D", patternIndex+1);
                     else if (move == 'R') TryEnqueue(x, y + 1, "R", patternIndex+1);
                     else if (move == '?')
@@ -90,21 +98,14 @@ namespace Lab02
                     }
                     else if (move == '*')
                     {
-                        for (int i = x + 1; i < n && !obstacleSet.Contains((i, y)); i++)
-                        {
-                            string addPath = new string('D', i - x);
-                            TryEnqueue(i, y, addPath, patternIndex+1);
-                            //TryEnqueue(i, y, "D", patternIndex+1);
-                        }
-                    
-                        for (int j = y + 1; j < m && !obstacleSet.Contains((x, j)); j++)
-                        {
-                            string addPath = new string('R', j - y); 
-                            TryEnqueue(x, j, addPath, patternIndex+1);    
-                            //TryEnqueue(x, j, "R", patternIndex+1);    
-                        }
+                        TryEnqueue(x + 1, y, "D", patternIndex);
+                        TryEnqueue(x, y + 1, "R", patternIndex);
+                        TryEnqueue(x + 1, y, "D", patternIndex+1);
+                        TryEnqueue(x, y + 1, "R", patternIndex+1);
+                        TryEnqueue(x , y, "", patternIndex+1);
                     }
                 }
+                //Console.WriteLine($"na koniec petli patternIndex = {patternIndex}");
 
             }
             return (false, "");
