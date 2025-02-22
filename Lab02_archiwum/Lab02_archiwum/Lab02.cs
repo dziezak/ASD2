@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization.Metadata;
+using System.Xml;
 
 namespace ASD
 {
@@ -126,11 +127,22 @@ namespace ASD
         public (bool result, int cost, (int i, int j)[] pat) Lab02Stage2(int n, int m, ((int di, int dj) step, int cost)[] moves)
         {
             int movesCount = moves.Length;
-            Dictionary<State, int> moveCost = new();
-            Dictionary<State, State> lastMove = new();
+            int[,,] moveCost = new int[n,m,1<<movesCount];
+            State[,,] lastMove = new State[n,m,1<<movesCount];
             PriorityQueue<State, int> prioQ = new();
 
-            moveCost[new State(0, 0, 0)] = 0;
+            for(int x = 0; x< n; x++)
+            {
+                for(int y = 0; y< m; y++)
+                {
+                    for(int  z = 0; z<(1<<movesCount); z++)
+                    {
+                        moveCost[x,y,z] = int.MaxValue;
+                    }
+                }
+            }
+
+            moveCost[0,0,0] = 0;
             prioQ.Enqueue(new State(0, 0, 0), 0);
 
             while(prioQ.Count > 0)
@@ -143,10 +155,10 @@ namespace ASD
                 if(i == n - 1)
                 {
                     List<(int, int)> path = new();
-                    while(lastMove.ContainsKey(state))
+                    while (!(state.i == 0 && state.j == 0 && state.usedMoves == 0))
                     {
                         path.Add((state.i, state.j));
-                        state = lastMove[state];
+                        state = lastMove[state.i, state.j, state.usedMoves];
                     }
                     path.Add((0, 0));
                     path.Reverse();
@@ -165,18 +177,16 @@ namespace ASD
                     if (ni < n && nj < m && nj >= 0) 
                     {
                         var newState = new State(ni, nj, newUsedMoves);
-                        if (!moveCost.ContainsKey(newState) || newCost < moveCost[newState])
+                        if(newCost < moveCost[ni, nj, newUsedMoves])
                         {
-                            moveCost[newState] = newCost;
-                            prioQ.Enqueue(newState, newCost);
-                            lastMove[newState] = state;
+                            moveCost[ni, nj, newUsedMoves] = newCost;
+                            prioQ.Enqueue(new State(ni, nj, newUsedMoves), newCost);
+                            lastMove[ni, nj, newUsedMoves] = state;
                         }
                     }
                 }
             }
-           
             return (false, int.MaxValue, null);
-
         }
     }
 }
