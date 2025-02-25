@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Skreslaie_wzorow")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+489c8e97125abdaf06f150c2bf9953a74518d86e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a21817ca65d4abc9f84b19ac9db76ee4401fec9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Skreslaie_wzorow")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Skreslaie_wzorow")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
