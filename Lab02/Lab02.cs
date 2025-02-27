@@ -129,8 +129,6 @@ namespace ASD
                 }
             }
 
-
-
             //uzupelnijmu poziom 1 ( czyli drugi od gory) bo bez Kar jest
             for (int j = 0; j < W; j++)
             {
