@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Intrinsics.Arm;
+//using System.Runtime.Intrinsics.Arm;
 using System.Text;
 
 namespace ASD
@@ -99,6 +99,7 @@ namespace ASD
         /// </returns>
 
         //Pomsył: Robimy to samo, tylko bierzemy jeszcze pod uwage skad idziemy ( jako 3 wymiar)
+        // odpowiednio 0 oznacza przyjscie z lewej, 1 oznacza przyjscie z gory, 2 oznacza przyjscie w prawej
         public (int cost, (int i, int j)[] seam) Stage2(int[,] S, int K)
         {
             int H = S.GetLength(0);
@@ -109,7 +110,7 @@ namespace ASD
             (int, int, int)[,,] prev = new (int, int, int)[H, W, 3];
 
 
-            //uzupelnijmy gore
+            //uzupelnijmy gorna warste
             for (int j = 0; j < W; j++)
             {
                 for (int dim = 0; dim < 3; dim++)
@@ -119,19 +120,25 @@ namespace ASD
                 }
             }
 
-            //wsyztsko na inf
+            //ustawiamy pozostale wartosic na nieskonczonosc ( najwazniejsze jest aby
+            //brzegowe wartosci byly inf ( oczywiscei -1000000 w razie czego )
             for (int i = 1; i < H; i++)
             {
                 for (int j = 0; j < W; j++)
                 {
                     for (int dim = 0; dim < 3; dim++)
                     {
-                        dp[i, j, dim] = int.MaxValue - 1000000; // zobaczymy czy -1 jest wazne wsm
+                        dp[i, j, dim] = int.MaxValue - 1000000;
                     }
                 }
             }
 
             //uzupelnijmu poziom 1 ( czyli drugi od gory) osobno bo bez Kar jest
+            // nie da sie zrobic kary gdy nie wiadomo skad przyszlismy wczesniej
+            // Zlozonosc O(W*3*3) = O(W)
+            // trzeba wyIf'owac przypadki niemozliwe czyli przyjscie od lewej gdzie nie ma niczego z lewej
+            // ( dlatego dp w wartosciach ((j == 0) && (dim == 0)) oraz ((j == W - 1) && (dim == 2))) powinny 
+            // zostac rowne inf ( lub int.MaxValue))
             for (int j = 0; j < W; j++)
             {
                 for (int dim = 0; dim < 3; dim++)
@@ -140,7 +147,6 @@ namespace ASD
                     {
                         if (!((j == 0) && (dim == 0)) && !((j == W - 1) && (dim == 2)))
                         {
-                            //dp[1, j, dim] = Math.Min(dp[0, j + dim-1, dimWczes] + S[1, j], dp[1, j, dim]);
                             if (dp[0, j + dim - 1, dimWczes] + S[1, j] < dp[1, j, dim])
                             {
                                 dp[1, j, dim] = dp[0, j + dim - 1, dimWczes] + S[1, j];
@@ -151,6 +157,11 @@ namespace ASD
                 }
             }
 
+            //Prosze wzrocic uwage, ze zlozonsc jest O(H*W*3*3) czyli O(O*W)
+            // pisze to poniewaz cztery pętle wyglądają groźnie, ale sa one tylko dla wygody i przejrzystosci kodu
+            // ( możnaby HardCodowo wpisać 9 if'ów ale to by było za dużo kodu)
+            // Pisze w razie czego jakbym za tydzien aby pozniej sie szybko wybronic
+            // gdyby Pan pytal, a jak pod presja nie wiedzialmyb co powiedziec
             for(int i=2; i<H; i++)
             {
                 for(int j=0; j<W; j++)
@@ -173,7 +184,7 @@ namespace ASD
                 }
             }
 
-            ///wyznaczam index dla dla najmniejszej sciezki:
+            //wyznaczam index dla dla najmniejszej sciezki:
             int indexJ = 0;
             int indexDim = 0;
             int odp = int.MaxValue;
@@ -191,37 +202,21 @@ namespace ASD
             }
 
             //odtwarzaie sciezki
+            //Analogicznie do poprzedniego etapu
             int tempI = H - 1,
                 tempJ = indexJ,
                 tempDim = indexDim;
             seam[H-1] = (tempI, tempJ);
 
             int prevI, prevJ, prevDim;
-            //(prevI, prevJ) = prev[tempI, tempJ, tempDim]; 
             for (int i = H - 1; i > 0; i--)
             {
                 (prevI, prevJ, prevDim) = prev[tempI, tempJ, tempDim]; 
                 seam[i-1] = (prevI, prevJ);
-                //musimy wyznaczyc jakie jest dim 
-                /*
-                for(int dim=0; dim<2; dim++)
-                {
-                    int kara = (dim == tempDim) ? 0 : K;
-                    if (dp[prevI, prevJ , dim] + kara + S[prevI, prevJ] == dp[tempI, tempJ, tempDim])
-                    {
-                        tempI = prevI;
-                        tempJ = prevJ;
-                        tempDim = dim;
-                    }
-                }
-                */
                 tempI = prevI;
                 tempJ = prevJ;
                 tempDim = prevDim;
             }
-
-
-
             return (odp, seam);
         }
     }
