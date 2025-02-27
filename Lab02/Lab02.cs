@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 
@@ -81,8 +82,6 @@ namespace ASD
                 seam[i - 1] = (previousI, previousJ);
                 index = previousJ;
             }
-            (previousI, previousJ) = position[0, index];
-            seam[0] = (previousI, previousJ);
             return (odp, seam);
         }
 
@@ -106,18 +105,21 @@ namespace ASD
             int W = S.GetLength(1);
             int[,,] dp = new int[H, W, 3];
 
-            (int, int)[,] position = new (int, int)[H, W];
             (int, int)[] seam = new (int, int)[H];
+            (int, int, int)[,,] prev = new (int, int, int)[H, W, 3];
 
 
             //uzupelnijmy gore
             for (int j = 0; j < W; j++)
             {
                 for (int dim = 0; dim < 3; dim++)
+                {
                     dp[0, j, dim] = S[0, j];
-                position[0, j] = (0, j);
+                    prev[0, j, dim] = (0, j, 0);
+                }
             }
 
+            //wsyztsko na inf
             for (int i = 1; i < H; i++)
             {
                 for (int j = 0; j < W; j++)
@@ -129,7 +131,7 @@ namespace ASD
                 }
             }
 
-            //uzupelnijmu poziom 1 ( czyli drugi od gory) bo bez Kar jest
+            //uzupelnijmu poziom 1 ( czyli drugi od gory) osobno bo bez Kar jest
             for (int j = 0; j < W; j++)
             {
                 for (int dim = 0; dim < 3; dim++)
@@ -138,7 +140,12 @@ namespace ASD
                     {
                         if (!((j == 0) && (dim == 0)) && !((j == W - 1) && (dim == 2)))
                         {
-                            dp[1, j, dim] = Math.Min(dp[0, j + dim-1, dimWczes] + S[1, j], dp[1, j, dim]);
+                            //dp[1, j, dim] = Math.Min(dp[0, j + dim-1, dimWczes] + S[1, j], dp[1, j, dim]);
+                            if (dp[0, j + dim - 1, dimWczes] + S[1, j] < dp[1, j, dim])
+                            {
+                                dp[1, j, dim] = dp[0, j + dim - 1, dimWczes] + S[1, j];
+                                prev[1, j, dim] = (0, j + dim -1, dimWczes);
+                            }
                         }
                     }
                 }
@@ -155,7 +162,11 @@ namespace ASD
                             if (!((j == 0) && (dim == 0)) && !((j == W - 1) && (dim == 2)))
                             {
                                 int kara = (dimWczes == dim) ? 0 : K;
-                                dp[i, j, dim] =Math.Min(dp[i-1, j + dim - 1, dimWczes] + kara + S[i, j], dp[i, j, dim]);
+                                if (dp[i-1, j+dim-1, dimWczes] + kara + S[i, j] < dp[i, j, dim])
+                                {
+                                    dp[i, j, dim] = dp[i - 1, j + dim - 1, dimWczes] + kara + S[i, j];
+                                    prev[i, j, dim] = (i - 1, j + dim -1, dimWczes);
+                                }
                             }
                         }
                     }
@@ -178,6 +189,39 @@ namespace ASD
                     }
                 }
             }
+
+            //odtwarzaie sciezki
+            int tempI = H - 1,
+                tempJ = indexJ,
+                tempDim = indexDim;
+            seam[H-1] = (tempI, tempJ);
+
+            int prevI, prevJ, prevDim;
+            //(prevI, prevJ) = prev[tempI, tempJ, tempDim]; 
+            for (int i = H - 1; i > 0; i--)
+            {
+                (prevI, prevJ, prevDim) = prev[tempI, tempJ, tempDim]; 
+                seam[i-1] = (prevI, prevJ);
+                //musimy wyznaczyc jakie jest dim 
+                /*
+                for(int dim=0; dim<2; dim++)
+                {
+                    int kara = (dim == tempDim) ? 0 : K;
+                    if (dp[prevI, prevJ , dim] + kara + S[prevI, prevJ] == dp[tempI, tempJ, tempDim])
+                    {
+                        tempI = prevI;
+                        tempJ = prevJ;
+                        tempDim = dim;
+                    }
+                }
+                */
+                tempI = prevI;
+                tempJ = prevJ;
+                tempDim = prevDim;
+            }
+
+
+
             return (odp, seam);
         }
     }
