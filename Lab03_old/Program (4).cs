@@ -218,7 +218,7 @@ namespace ASD
                 for (int i = 0; i < result_graph.VertexCount; ++i)
                     foreach (Edge<int> e1 in result_graph.OutEdges(i))
                     {
-                        if (e1.weight < 0 || e1.weight >= colors_number)
+                        if (e1.weight< 0 || e1.weight >= colors_number)
                             return (Result.WrongResult, $"Invalid color: {e1.weight}");
                         used[(int)e1.weight] = true;
                         foreach (Edge<int> e2 in result_graph.OutEdges(e1.To))
