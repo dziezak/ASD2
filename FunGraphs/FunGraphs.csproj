@@ -7,4 +7,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="Graphs">
+        <HintPath>..\Graphs.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>
