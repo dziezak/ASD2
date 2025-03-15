@@ -70,9 +70,10 @@ namespace ASD
         /// </returns>
         public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage2(Graph G, int K, int[] s, int[] serviceTurnoffDay)
         {
+            bool print = false;
             int n = G.VertexCount;
-            int m = G.EdgeCount;
-            int p = s.Length;
+            //int m = G.EdgeCount;
+            //int p = s.Length;
             bool[] infected = new bool[n];
             int[] visited = new int[n];
             Queue<(int, int)> q = new Queue<(int, int)>();
@@ -80,26 +81,46 @@ namespace ASD
             for (int k=0; k<n; k++)
             {
                 visited[k] = -1;
+                infected[k] = false;
             }
 
-            foreach (int sn in s)
+            if(print)
+                Console.Write("Wrzucamy na poczatku:");
+            foreach (var sn in s)
             {
-                q.Enqueue((sn, 1));
+                if (serviceTurnoffDay[sn] >= 1)
+                {
+                    if(print)
+                        Console.WriteLine($"({sn}, {1})");
+                    q.Enqueue((sn, 1));
+                    visited[sn] = 1;
+                    infected[sn] = true;
+                }
             }
+
+            if(print)
+                Console.WriteLine("Koniec wstawiania.");
                
             while (q.Count > 0)
             {
-                
                 var (i, daysPassed) = q.Dequeue();
-               
-                visited[i] = daysPassed;
-                infected[i] = true;
-                if (daysPassed < K)
+                if(print)
+                    Console.WriteLine($"Dequeue: ({i}, {daysPassed})");
+                if (daysPassed >= K)
+                    continue;
+                if(serviceTurnoffDay[i] <= daysPassed+1)
+                    continue;
+                //Console.WriteLine("Koniec wstawiania.");
+                foreach (var v in G.OutNeighbors(i))
                 {
-                    foreach (int v in G.OutNeighbors(i))
+                    if (serviceTurnoffDay[v] > 1 + daysPassed)
                     {
-                        if ((visited[v] < 0 || visited[v] > daysPassed + 1) && serviceTurnoffDay[v] < daysPassed + 1)
+                        if (visited[v] == -1 || daysPassed + 1 < visited[v])
                         {
+                            if(print)
+                                Console.WriteLine($"({v}, {daysPassed + 1})");
+                            visited[v] = daysPassed + 1;
+                            infected[v] = true;
                             q.Enqueue((v, daysPassed + 1));
                         }
                     }
@@ -112,6 +133,10 @@ namespace ASD
                 if (infected[j])
                     result.Add(j);
             }
+            
+            if(print)
+                foreach (var i in result)
+                    Console.Write($"{i}, ");
 
             return (result.Count, result.ToArray());
         }
@@ -138,5 +163,6 @@ namespace ASD
 
             return (int.MaxValue, null);
         }
+        
     }
 }
