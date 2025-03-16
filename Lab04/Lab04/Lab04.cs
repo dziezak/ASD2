@@ -171,6 +171,7 @@ namespace ASD
                 infected[k] = false;
             }
 
+
             if(print)
                 Console.Write("Wrzucamy na poczatku:");
             foreach (var sn in s)
