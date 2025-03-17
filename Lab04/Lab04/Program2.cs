@@ -280,5 +280,63 @@ namespace ASD
             }
             // odp 2 : services{0, 1};
         }
+        //TOD : ten test nie dziala
+        static void Main(string[] args) //Test propagacji v3
+        {
+            int K = 5;
+            int n = 4;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            g.AddEdge(2, 3);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] {1, 1, K + 1, K + 1 };
+            int[] serviceTurnonDay = new int[] { 1, 2, K + 1, K + 1 };
+            var test = new Lab04();
+            Console.Write("ser:");
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write($"{i}, ");
+            }
+
+            Console.WriteLine();
+            Console.Write("off:");
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnoffDay[i]}, ");
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnoffDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            Console.Write("on :");
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnonDay[i]}, ");
+
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnonDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            (int numberOfInfectedServices, int[] listOfInfectedServices) =
+                test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            Console.WriteLine($"wynik: {numberOfInfectedServices}");
+            foreach (var service in listOfInfectedServices)
+            {
+                Console.Write($"{service}, ");
+            }
+            // odp 4 : services{0, 1, 2, 3};
+        }
     }
 }
