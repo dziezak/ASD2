@@ -340,7 +340,7 @@ namespace ASD
             // odp 4 : services{0, 1, 2, 3};
         }
 
-        static void Main(string[] args) // Test szefa
+        static void Main5(string[] args) // Test szefa
         {
             Graph h = new Graph(2);
             h.AddEdge(0, 1);
@@ -355,6 +355,25 @@ namespace ASD
             test.Stage3(h, K, s, serviceTurnoffDay, serviceTurnonDay);
             //odp = 1 ser: {0}
 
+        }
+
+        static void Main6(string[] args)
+        {
+            int K;
+            int n = 4;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            g.AddEdge(2, 3);
+            K = 4;
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] { 1, 1, K + 1, K + 1 };
+            int[] serviceTurnonDay = new int[] { 1, 2, K + 1, K + 1 };
+            var test = new Lab04();
+            test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            //odp: {0, 1, 2}
+            //addStage3(new Stage3TestCase(new int[] { 0 }, new int[] { 1, 1, K + 1, K + 1 }, new int[] { 1, 2, K + 1, K + 1 }, g, n, g.EdgeCount, K, 3, new int[] { 0, 1, 2 }, 1, "Test propagacji v2"));
+            
         }
     }
 }

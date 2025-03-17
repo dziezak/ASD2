@@ -446,7 +446,7 @@ namespace ASD
     class Program
     
     {
-        static void Main0(string[] args)
+        static void Main(string[] args)
         {
             var tests = new Lab04Tests();
             tests.PrepareTestSets();

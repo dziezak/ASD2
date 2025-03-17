@@ -202,6 +202,33 @@ namespace ASD
                     if (visited[B])
                         continue;
                     int dayInfectedNeighbor = dayAInfected + 1;
+                    if ((serviceTurnonDay[A]+1<serviceTurnoffDay[B]) 
+                        || (serviceTurnonDay[B]+1<serviceTurnoffDay[A]))
+                    {
+                        if (serviceTurnonDay[A]+1<serviceTurnoffDay[B])
+                        {
+                            if (dayInfectedNeighbor < serviceTurnoffDay[A]) ;
+                            else if (dayInfectedNeighbor < serviceTurnonDay[B])
+                                dayInfectedNeighbor = Math.Max(dayInfectedNeighbor , serviceTurnonDay[A] + 1);
+                            else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[B] + 1);
+                        }
+
+                        if (serviceTurnonDay[B] + 1 < serviceTurnoffDay[A])
+                        {
+                            if (dayInfectedNeighbor < serviceTurnoffDay[B]) ;
+                            else if (dayInfectedNeighbor < serviceTurnonDay[A]) 
+                                dayInfectedNeighbor = Math.Max(dayInfectedNeighbor,serviceTurnonDay[B] + 1);
+                            else dayInfectedNeighbor= Math.Max(dayInfectedNeighbor, serviceTurnonDay[A] + 1);
+                        }
+                    }
+                    else
+                    {
+                       int DiMin=Math.Min(serviceTurnoffDay[A],serviceTurnoffDay[B]);
+                       int DiMax = Math.Max(serviceTurnonDay[A], serviceTurnonDay[B]);
+                       if (dayInfectedNeighbor < DiMin) ;
+                       else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, DiMax + 1);
+                    }
+                    /*
                     if (dayInfectedNeighbor < serviceTurnoffDay[A])
                     {
                         ;
@@ -219,6 +246,7 @@ namespace ASD
                     {
                         dayInfectedNeighbor = Math.Max(serviceTurnonDay[B] + 1, dayInfectedNeighbor);
                     }
+                    */
 
                     if (dayInfectedNeighbor > K)
                         continue;
