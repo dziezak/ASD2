@@ -167,12 +167,13 @@ namespace ASD
             bool print = false;
             int n = G.VertexCount;
             bool[] infected = new bool[n];
-            bool[] visited = new bool[n];
+            int[] visited = new int[n];
+            List<int> result = new List<int>();
             Queue<(int, int)> q = new Queue<(int, int)>();
 
             for (int k=0; k<n; k++)
             {
-                visited[k] = false;
+                visited[k] = -1;
                 infected[k] = false;
             }
 
@@ -184,8 +185,9 @@ namespace ASD
                 if(print)
                     Console.WriteLine($"Enqueu: ({sn}, {1})");
                 q.Enqueue((sn, 1));
-                //visited[sn] = true;
+               // visited[sn] = 1;
                 infected[sn] = true;
+                //result.Add(sn);
             }
 
             if(print)
@@ -194,13 +196,18 @@ namespace ASD
             while (q.Count > 0)
             {
                 var (A, dayAInfected) = q.Dequeue();
-                visited[A] = true;
                 if(print)
                     Console.WriteLine($"Dequeue: ({A}, {dayAInfected})");
+                if (visited[A] == -1 || dayAInfected < visited[A])
+                {
+                    visited[A] = dayAInfected;
+                    //result.Add(A);
+                }
+                else continue;
+                visited[A] = dayAInfected;
                 foreach (var B in G.OutNeighbors(A))
                 {
-                    if (visited[B])
-                        continue;
+                    if(visited[B] > 0) continue;
                     int dayInfectedNeighbor = dayAInfected + 1;
                     if ((serviceTurnonDay[A]+1<serviceTurnoffDay[B]) 
                         || (serviceTurnonDay[B]+1<serviceTurnoffDay[A]))
@@ -251,14 +258,16 @@ namespace ASD
                     if (dayInfectedNeighbor > K)
                         continue;
 
-                    infected[B] = true;
-                    if(print)
-                        Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
-                    q.Enqueue((B, dayInfectedNeighbor));
+                    if (visited[B] == -1 || dayInfectedNeighbor < visited[B])
+                    {
+                        infected[B] = true;
+                        if(print)
+                            Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
+                        q.Enqueue((B, dayInfectedNeighbor));
+                    }
                 }
             }
 
-            List<int> result = new List<int>();
             for (int j = 0; j < n; j++)
             {
                 if (infected[j])

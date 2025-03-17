@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 //using ASD;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using ASD.Graphs;
 
 
@@ -374,6 +375,23 @@ namespace ASD
             //odp: {0, 1, 2}
             //addStage3(new Stage3TestCase(new int[] { 0 }, new int[] { 1, 1, K + 1, K + 1 }, new int[] { 1, 2, K + 1, K + 1 }, g, n, g.EdgeCount, K, 3, new int[] { 0, 1, 2 }, 1, "Test propagacji v2"));
             
+        }
+
+        static void Main7(string[] args)
+        {
+            
+            int n = 3;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            int K = 3;
+            int[] s = new int[] { 0, 2 };
+            int[] serviceTurnoffDay = new int[] { 1, 1, K + 1 };
+            int[] serviceTurnonDay = new int[] { 1, 2, K + 1 };
+            var test = new Lab04();
+            test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            //odp: {0, 1, 2}
+            //addStage3(new Stage3TestCase(new int[] { 0, 2 }, new int[] { 1, 1, K + 1 }, new int[] { 1, 2, K + 1 }, g, n, g.EdgeCount, K, 3, new int[] { 0, 1, 2 }, 1, "Test linia v5"));
         }
     }
 }
