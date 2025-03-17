@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace ASD
 {
     public class Lab04 : MarshalByRefObject
@@ -159,19 +160,19 @@ namespace ASD
         /// dla kazdego v: 1<=serviceTurnoffday[v]<=serviceTurnonDay[v]<=K+1
         /// czyli jesli mialby byc zarazony w ten czas to nie zaraza
         /// jesli byl zarazony i jest zatrzymany to przestaje zarazac teraz i bedzie zarazac dopiero w serviceTurnonday[v]+1 ( bo wlaczenie jest na koniec)
-        ///  w kolejce trzymamy: ( numer_service, dzien_w_ktory_zaraza)
+        ///  w kolejce trzymamy: ( numer_service, dzien_w_ktorym_jest_zarazony)
         ///  
         public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage3(Graph G, int K, int[] s, int[] serviceTurnoffDay, int[] serviceTurnonDay)
         {
             bool print = false;
             int n = G.VertexCount;
             bool[] infected = new bool[n];
-            int[] visited = new int[n];
+            bool[] visited = new bool[n];
             Queue<(int, int)> q = new Queue<(int, int)>();
 
             for (int k=0; k<n; k++)
             {
-                visited[k] = -1;
+                visited[k] = false;
                 infected[k] = false;
             }
 
@@ -180,20 +181,11 @@ namespace ASD
             
             foreach (var sn in s)
             {
-                if (serviceTurnoffDay[sn] > 1 ) // serwer nie jest wylaczony dnia pierwszego
-                {
-                    if(print)
-                        Console.WriteLine($"({sn}, {1})");
-                    q.Enqueue((sn, 1));
-                    visited[sn] = 1;
-                    infected[sn] = true;
-                } 
-                else if(serviceTurnonDay[sn]< K+1)// serwer ponownie wylaczony poprawka z testu 2
-                {
-                    q.Enqueue((sn, serviceTurnonDay[sn]+1));
-                    visited[sn] = serviceTurnonDay[sn]+1;
-                    infected[sn] = true;
-                } 
+                if(print)
+                    Console.WriteLine($"Enqueu: ({sn}, {1})");
+                q.Enqueue((sn, 1));
+                //visited[sn] = true;
+                infected[sn] = true;
             }
 
             if(print)
@@ -201,36 +193,40 @@ namespace ASD
                
             while (q.Count > 0)
             {
-                var (i, daysPassed) = q.Dequeue();
+                var (A, dayAInfected) = q.Dequeue();
+                visited[A] = true;
                 if(print)
-                    Console.WriteLine($"Dequeue: ({i}, {daysPassed})");
-                if (daysPassed > K)
-                    continue;
-                if(serviceTurnoffDay[i] <= daysPassed+1 && daysPassed + 1 <= serviceTurnonDay[i]) // pomyslec czy drugi warunek ok poprawka z testu 3
-                    continue;
-                foreach (var v in G.OutNeighbors(i))
+                    Console.WriteLine($"Dequeue: ({A}, {dayAInfected})");
+                foreach (var B in G.OutNeighbors(A))
                 {
-                    if (serviceTurnoffDay[v] > daysPassed) 
+                    if (visited[B])
+                        continue;
+                    int dayInfectedNeighbor = dayAInfected + 1;
+                    if (dayInfectedNeighbor < serviceTurnoffDay[A])
                     {
-                        if (visited[v] == -1 || daysPassed + 1 < visited[v])
-                        {
-                            if(print)
-                                Console.WriteLine($"({v}, {daysPassed + 1})");
-                            visited[v] = daysPassed + 1;
-                            infected[v] = true;
-                            q.Enqueue((v, daysPassed + 1));
-                        }
-                    }else if (daysPassed + 1 > serviceTurnonDay[v] || serviceTurnonDay[v] <= K ) // drugi warunek poprawka z testu 4
-                    {
-                        if (visited[v] == -1 || serviceTurnonDay[v]+1 < visited[v])
-                        {
-                            if (print)
-                                Console.WriteLine($"({v}, {daysPassed + 1})");
-                            visited[v] = serviceTurnonDay[v]+1;
-                            infected[v] = true;
-                            q.Enqueue((v, serviceTurnonDay[v]+2));// tutaj +2 bo +1 jest dnia jego zarazenia więc +2 to dzien w ktory zaraza
-                        }
+                        ;
                     }
+                    else
+                    {
+                        dayInfectedNeighbor =Math.Max(serviceTurnonDay[A] + 1, dayInfectedNeighbor);
+                    }
+
+                    if (dayInfectedNeighbor < serviceTurnoffDay[B])
+                    {
+                        ;
+                    }
+                    else if (dayInfectedNeighbor <= serviceTurnonDay[B])
+                    {
+                        dayInfectedNeighbor = Math.Max(serviceTurnonDay[B] + 1, dayInfectedNeighbor);
+                    }
+
+                    if (dayInfectedNeighbor > K)
+                        continue;
+
+                    infected[B] = true;
+                    if(print)
+                        Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
+                    q.Enqueue((B, dayInfectedNeighbor));
                 }
             }
 
@@ -240,10 +236,13 @@ namespace ASD
                 if (infected[j])
                     result.Add(j);
             }
-            
-            if(print)
-                foreach (var i in result)
-                    Console.Write($"{i}, ");
+
+            if (print)
+            {
+                for (int i = 0; i < result.Count; i++)
+                    Console.Write($"{result[i]}, ");
+                Console.WriteLine();
+            }
 
             return (result.Count, result.ToArray());
         }

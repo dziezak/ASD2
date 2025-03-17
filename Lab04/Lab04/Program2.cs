@@ -115,7 +115,7 @@ namespace ASD
         }
 
         //Stage 3:
-        static void Main2(string[] args)
+        static void Main1(string[] args)
         {
             int K = 2;
             int n = 3;
@@ -170,7 +170,7 @@ namespace ASD
             // odp 1 : services{0};
         }
 
-        static void Main3(string[] args)
+        static void Main2(string[] args) //2
         {
             int K = 2;
             int n = 3;
@@ -216,15 +216,17 @@ namespace ASD
             Console.WriteLine();
             (int numberOfInfectedServices, int[] listOfInfectedServices) =
                 test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
-            Console.WriteLine($"wynik: {numberOfInfectedServices}");
+            //Console.WriteLine($"wynik: {numberOfInfectedServices}");
+            /*
             foreach (var service in listOfInfectedServices)
             {
                 Console.Write($"{service}, ");
             }
+            */
             // odp 2 : services{0, 1};
         }
 
-        static void main4(string[] args) //linia v4
+        static void Main3(string[] args) //Test linia v4
         {
             int K = 3;
             int n = 3;
@@ -280,8 +282,7 @@ namespace ASD
             }
             // odp 2 : services{0, 1};
         }
-        //TOD : ten test nie dziala
-        static void Main(string[] args) //Test propagacji v3
+        static void Main4(string[] args) //Test propagacji v3
         {
             int K = 5;
             int n = 4;
@@ -337,6 +338,23 @@ namespace ASD
                 Console.Write($"{service}, ");
             }
             // odp 4 : services{0, 1, 2, 3};
+        }
+
+        static void Main(string[] args) // Test szefa
+        {
+            Graph h = new Graph(2);
+            h.AddEdge(0, 1);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] { 4, 1 };
+            int[] serviceTurnonDay = new int[] { 10, 7 };
+            int n = 2;
+            int m = 1;
+            int K = 9;
+            //addStage3(new Stage3TestCase(new int[] { 0 }, new int[] { 4, 1 }, new int[] { 10, 7 }, h, 2, 1, 9, 1, new int[] { 0 }, 1, "Test szefa"));
+            var test = new Lab04();
+            test.Stage3(h, K, s, serviceTurnoffDay, serviceTurnonDay);
+            //odp = 1 ser: {0}
+
         }
     }
 }
