@@ -155,12 +155,16 @@ namespace ASD
         /// numberOfInfectedServices: liczba zainfekowanych serwisów,
         /// listOfInfectedServices: tablica zawierająca numery zainfekowanych serwisów w kolejności rosnącej.
         /// </returns>
+        /// czyli serwer v jest bezpieczny w trakcie czasu [serviceTurnoffDay[v], serviceTurnOnDay[v]];
+        /// dla kazdego v: 1<=serviceTurnoffday[v]<=serviceTurnonDay[v]<=K+1
+        /// czyli jesli mialby byc zarazony w ten czas to nie zaraza
+        /// jesli byl zarazony i jest zatrzymany to przestaje zarazac teraz i bedzie zarazac dopiero w serviceTurnonday[v]+1 ( bo wlaczenie jest na koniec)
+        ///  w kolejce trzymamy: ( numer_service, dzien_w_ktory_zaraza)
+        ///  
         public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage3(Graph G, int K, int[] s, int[] serviceTurnoffDay, int[] serviceTurnonDay)
         {
-             bool print = false;
+            bool print = false;
             int n = G.VertexCount;
-            //int m = G.EdgeCount;
-            //int p = s.Length;
             bool[] infected = new bool[n];
             int[] visited = new int[n];
             Queue<(int, int)> q = new Queue<(int, int)>();
@@ -171,19 +175,25 @@ namespace ASD
                 infected[k] = false;
             }
 
-
             if(print)
                 Console.Write("Wrzucamy na poczatku:");
+            
             foreach (var sn in s)
             {
-                if (serviceTurnoffDay[sn] >= 1 || serviceTurnonDay[sn] >= 1) // serwer moze nie wylaczony 1 dnia albo ponownie wylaczony 1 dnia
+                if (serviceTurnoffDay[sn] > 1 ) // serwer nie jest wylaczony dnia pierwszego
                 {
                     if(print)
                         Console.WriteLine($"({sn}, {1})");
                     q.Enqueue((sn, 1));
                     visited[sn] = 1;
                     infected[sn] = true;
-                }
+                } 
+                else if(serviceTurnonDay[sn]< K+1)// serwer ponownie wylaczony
+                {
+                    q.Enqueue((sn, serviceTurnonDay[sn]+1));
+                    visited[sn] = serviceTurnonDay[sn]+1;
+                    infected[sn] = true;
+                } 
             }
 
             if(print)
@@ -196,12 +206,11 @@ namespace ASD
                     Console.WriteLine($"Dequeue: ({i}, {daysPassed})");
                 if (daysPassed >= K)
                     continue;
-                if(serviceTurnoffDay[i] <= daysPassed+1 && daysPassed+1 < serviceTurnonDay[i]) // pomyslec czy drugi warunek ok
+                if(serviceTurnoffDay[i] <= daysPassed+1 && daysPassed + 1 <= serviceTurnonDay[i]) // pomyslec czy drugi warunek ok
                     continue;
-                //Console.WriteLine("Koniec wstawiania.");
                 foreach (var v in G.OutNeighbors(i))
                 {
-                    if (serviceTurnoffDay[v] > 1 + daysPassed)
+                    if (serviceTurnoffDay[v] > 1 + daysPassed) 
                     {
                         if (visited[v] == -1 || daysPassed + 1 < visited[v])
                         {
@@ -211,14 +220,15 @@ namespace ASD
                             infected[v] = true;
                             q.Enqueue((v, daysPassed + 1));
                         }
-                    }else if (daysPassed + 1 >= serviceTurnonDay[v])
+                    }else if (daysPassed + 1 > serviceTurnonDay[v])
                     {
-                        if (visited[v] == -1 || serviceTurnonDay[v] < visited[v])
+                        if (visited[v] == -1 || serviceTurnonDay[v]+1 < visited[v])
                         {
                             if (print)
                                 Console.WriteLine($"({v}, {daysPassed + 1})");
                             visited[v] = serviceTurnonDay[v]+1;
                             infected[v] = true;
+                            q.Enqueue((v, serviceTurnonDay[v]+1));
                         }
                     }
                 }

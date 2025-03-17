@@ -451,6 +451,7 @@ namespace ASD
             tests.PrepareTestSets();
             foreach (var ts in tests.TestSets)
             {
+                if(ts.Key == "Stage3") // usun
                 ts.Value.PerformTests(verbose: true, checkTimeLimit: true);
             }
         }
