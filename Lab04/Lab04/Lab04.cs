@@ -188,7 +188,7 @@ namespace ASD
                     visited[sn] = 1;
                     infected[sn] = true;
                 } 
-                else if(serviceTurnonDay[sn]< K+1)// serwer ponownie wylaczony
+                else if(serviceTurnonDay[sn]< K+1)// serwer ponownie wylaczony poprawka z testu 2
                 {
                     q.Enqueue((sn, serviceTurnonDay[sn]+1));
                     visited[sn] = serviceTurnonDay[sn]+1;
@@ -204,13 +204,13 @@ namespace ASD
                 var (i, daysPassed) = q.Dequeue();
                 if(print)
                     Console.WriteLine($"Dequeue: ({i}, {daysPassed})");
-                if (daysPassed >= K)
+                if (daysPassed > K)
                     continue;
-                if(serviceTurnoffDay[i] <= daysPassed+1 && daysPassed + 1 <= serviceTurnonDay[i]) // pomyslec czy drugi warunek ok
+                if(serviceTurnoffDay[i] <= daysPassed+1 && daysPassed + 1 <= serviceTurnonDay[i]) // pomyslec czy drugi warunek ok poprawka z testu 3
                     continue;
                 foreach (var v in G.OutNeighbors(i))
                 {
-                    if (serviceTurnoffDay[v] > 1 + daysPassed) 
+                    if (serviceTurnoffDay[v] > daysPassed) 
                     {
                         if (visited[v] == -1 || daysPassed + 1 < visited[v])
                         {
@@ -220,7 +220,7 @@ namespace ASD
                             infected[v] = true;
                             q.Enqueue((v, daysPassed + 1));
                         }
-                    }else if (daysPassed + 1 > serviceTurnonDay[v])
+                    }else if (daysPassed + 1 > serviceTurnonDay[v] || serviceTurnonDay[v] <= K ) // drugi warunek poprawka z testu 4
                     {
                         if (visited[v] == -1 || serviceTurnonDay[v]+1 < visited[v])
                         {
@@ -228,7 +228,7 @@ namespace ASD
                                 Console.WriteLine($"({v}, {daysPassed + 1})");
                             visited[v] = serviceTurnonDay[v]+1;
                             infected[v] = true;
-                            q.Enqueue((v, serviceTurnonDay[v]+1));
+                            q.Enqueue((v, serviceTurnonDay[v]+2));// tutaj +2 bo +1 jest dnia jego zarazenia więc +2 to dzien w ktory zaraza
                         }
                     }
                 }

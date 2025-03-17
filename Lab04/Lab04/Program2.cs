@@ -46,16 +46,18 @@ namespace ASD
             g.AddEdge(12, 23);
             g.AddEdge(23, 24);
             int[] s = new int[] { 0 };
-            
-            int[] serviceTurnoffDay = Enumerable.Range(0, n).Select(x => x == 3 || x == 4 || x == 1 ? 2 : K + 1).ToArray();
+
+            int[] serviceTurnoffDay =
+                Enumerable.Range(0, n).Select(x => x == 3 || x == 4 || x == 1 ? 2 : K + 1).ToArray();
 
 
             for (int i = 0; i < n; i++)
             {
                 Console.Write($"{i}, ");
             }
+
             Console.WriteLine();
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (i >= 10)
                 {
@@ -69,31 +71,32 @@ namespace ASD
 
             Console.WriteLine();
             var test = new Lab04();
-            
-            
-            (int numberOfInfectedServices, int[] listOfInfectedServices) = test.Stage2(g, K ,  s, serviceTurnoffDay);
+
+
+            (int numberOfInfectedServices, int[] listOfInfectedServices) = test.Stage2(g, K, s, serviceTurnoffDay);
             Console.WriteLine(numberOfInfectedServices);
 
-            
+
         }
 
-        static void main2(string[] args)
-        { 
+        static void niemain2(string[] args)
+        {
             int K = 2;
             int n = 3;
             Graph g = new Graph(n);
             g.AddEdge(0, 1);
-            g.AddEdge(1, 2); 
+            g.AddEdge(1, 2);
             int[] s = new int[] { 0 };
             int[] serviceTurnoffDay = new int[] { 2, K + 1, K + 1 };
             var test = new Lab04();
-            
+
             for (int i = 0; i < n; i++)
             {
                 Console.Write($"{i}, ");
             }
+
             Console.WriteLine();
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (i >= 10)
                 {
@@ -106,11 +109,13 @@ namespace ASD
             }
 
             Console.WriteLine();
-                
-            (int numberOfInfectedServices, int[] listOfInfectedServices) = test.Stage2(g, K ,  s, serviceTurnoffDay);
+
+            (int numberOfInfectedServices, int[] listOfInfectedServices) = test.Stage2(g, K, s, serviceTurnoffDay);
             Console.WriteLine($"wynik: {numberOfInfectedServices}");
         }
-        static void NieMain(string[] args)
+
+        //Stage 3:
+        static void Main2(string[] args)
         {
             int K = 2;
             int n = 3;
@@ -121,18 +126,18 @@ namespace ASD
             int[] s = new int[] { 0 };
             int[] serviceTurnoffDay = new int[] { 2, K + 1, K + 1 };
             int[] serviceTurnonDay = new int[] { 2, K + 1, K + 1 };
-            
+
             for (int i = 0; i < n; i++)
             {
                 Console.Write($"{i}, ");
             }
+
             Console.WriteLine();
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (i >= 10)
                 {
                     Console.Write($" {serviceTurnoffDay[i]}, ");
-                    
                 }
                 else
                 {
@@ -141,12 +146,12 @@ namespace ASD
             }
 
             Console.WriteLine();
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (i >= 10)
                 {
                     Console.Write($" {serviceTurnonDay[i]}, ");
-                    
+
                 }
                 else
                 {
@@ -155,12 +160,125 @@ namespace ASD
             }
 
             Console.WriteLine();
-            (int numberOfInfectedServices, int[] listOfInfectedServices) = test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            (int numberOfInfectedServices, int[] listOfInfectedServices) =
+                test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
             Console.WriteLine($"wynik: {numberOfInfectedServices}");
-            foreach(var service in listOfInfectedServices)
+            foreach (var service in listOfInfectedServices)
             {
                 Console.Write($"{service}, ");
             }
-        } 
+            // odp 1 : services{0};
+        }
+
+        static void Main3(string[] args)
+        {
+            int K = 2;
+            int n = 3;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] { 1, K + 1, K + 1 };
+            int[] serviceTurnonDay = new int[] { 1, K + 1, K + 1 };
+            var test = new Lab04();
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write($"{i}, ");
+            }
+
+            Console.WriteLine();
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnoffDay[i]}, ");
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnoffDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnonDay[i]}, ");
+
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnonDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            (int numberOfInfectedServices, int[] listOfInfectedServices) =
+                test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            Console.WriteLine($"wynik: {numberOfInfectedServices}");
+            foreach (var service in listOfInfectedServices)
+            {
+                Console.Write($"{service}, ");
+            }
+            // odp 2 : services{0, 1};
+        }
+
+        static void main4(string[] args) //linia v4
+        {
+            int K = 3;
+            int n = 3;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] { K + 1, 1, K + 1 };
+            int[] serviceTurnonDay = new int[] { K + 1, 2, K + 1 };
+            var test = new Lab04();
+            Console.Write("ser:");
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write($"{i}, ");
+            }
+
+            Console.WriteLine();
+            Console.Write("off:");
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnoffDay[i]}, ");
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnoffDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            Console.Write("on :");
+            for (int i = 0; i < n; i++)
+            {
+                if (i >= 10)
+                {
+                    Console.Write($" {serviceTurnonDay[i]}, ");
+
+                }
+                else
+                {
+                    Console.Write($"{serviceTurnonDay[i]}, ");
+                }
+            }
+
+            Console.WriteLine();
+            (int numberOfInfectedServices, int[] listOfInfectedServices) =
+                test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
+            Console.WriteLine($"wynik: {numberOfInfectedServices}");
+            foreach (var service in listOfInfectedServices)
+            {
+                Console.Write($"{service}, ");
+            }
+            // odp 2 : services{0, 1};
+        }
     }
 }
