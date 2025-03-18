@@ -71,13 +71,12 @@ namespace ASD
         /// </returns>
         public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage2(Graph G, int K, int[] s, int[] serviceTurnoffDay)
         {
-            bool print = false;
+            bool print = true;
             int n = G.VertexCount;
-            //int m = G.EdgeCount;
-            //int p = s.Length;
             bool[] infected = new bool[n];
             int[] visited = new int[n];
             Queue<(int, int)> q = new Queue<(int, int)>();
+            List<int> result = new List<int>();
 
             for (int k=0; k<n; k++)
             {
@@ -94,7 +93,6 @@ namespace ASD
                     if(print)
                         Console.WriteLine($"({sn}, {1})");
                     q.Enqueue((sn, 1));
-                    visited[sn] = 1;
                     infected[sn] = true;
                 }
             }
@@ -104,31 +102,33 @@ namespace ASD
                
             while (q.Count > 0)
             {
-                var (i, daysPassed) = q.Dequeue();
-                if(print)
-                    Console.WriteLine($"Dequeue: ({i}, {daysPassed})");
-                if (daysPassed >= K)
-                    continue;
-                if(serviceTurnoffDay[i] <= daysPassed+1)
-                    continue;
-                //Console.WriteLine("Koniec wstawiania.");
-                foreach (var v in G.OutNeighbors(i))
+                var (A, dayAInfected) = q.Dequeue();
+                if (visited[A] == -1 || dayAInfected < visited[A])
                 {
-                    if (serviceTurnoffDay[v] > 1 + daysPassed)
+                    visited[A] = dayAInfected;
+                }
+                else continue;
+                if(print)
+                    Console.WriteLine($"Dequeue: ({A}, {dayAInfected})");
+                foreach (var B in G.OutNeighbors(A))
+                {
+                    if(visited[B] > 0) continue; 
+                    int dayInfectedNeighbor = dayAInfected + 1;
+                    if (serviceTurnoffDay[B] > dayInfectedNeighbor && serviceTurnoffDay[A] > dayInfectedNeighbor)
                     {
-                        if (visited[v] == -1 || daysPassed + 1 < visited[v])
+                        if (visited[B] == -1 || dayInfectedNeighbor < visited[B])
                         {
+                            visited[B] = dayInfectedNeighbor;
+                            infected[B] = true;
                             if(print)
-                                Console.WriteLine($"({v}, {daysPassed + 1})");
-                            visited[v] = daysPassed + 1;
-                            infected[v] = true;
-                            q.Enqueue((v, daysPassed + 1));
+                                Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
+                            q.Enqueue((B, dayInfectedNeighbor));
                         }
                     }
+                        
                 }
             }
 
-            List<int> result = new List<int>();
             for (int j = 0; j < n; j++)
             {
                 if (infected[j])
@@ -201,7 +201,6 @@ namespace ASD
                 if (visited[A] == -1 || dayAInfected < visited[A])
                 {
                     visited[A] = dayAInfected;
-                    //result.Add(A);
                 }
                 else continue;
                 visited[A] = dayAInfected;

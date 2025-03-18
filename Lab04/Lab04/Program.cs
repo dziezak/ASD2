@@ -446,13 +446,13 @@ namespace ASD
     class Program
     
     {
-        static void Main(string[] args)
+        static void Main0(string[] args)
         {
             var tests = new Lab04Tests();
             tests.PrepareTestSets();
             foreach (var ts in tests.TestSets)
             {
-                //if(ts.Key == "Stage3") // usun
+                if(ts.Key == "Stage2") // usun
                 ts.Value.PerformTests(verbose: true, checkTimeLimit: true);
             }
         }

@@ -80,8 +80,11 @@ namespace ASD
 
         }
 
-        static void niemain2(string[] args)
+        //Etap2 testy
+        //static void Main(string[] args)
+        static void MainS2_1(string[] args)
         {
+            //odp : {0};
             int K = 2;
             int n = 3;
             Graph g = new Graph(n);
@@ -115,6 +118,63 @@ namespace ASD
             Console.WriteLine($"wynik: {numberOfInfectedServices}");
         }
 
+        //static void Main(string[] args)
+        static void MainS2_2(string[] args)
+        {
+            //odp : {0};
+            int K = 2;
+            int n = 3;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay = new int[] { K+1, 2, K+1 };
+            var test = new Lab04();
+            test.Stage2(g, K, s, serviceTurnoffDay);
+            //addStage2(new Stage2TestCase(new int[] { 0 }, new int[] { K + 1, 2, K + 1 }, g, n, g.EdgeCount, K, 1, new int[] { 0 }, 1, "Test linia v1"));
+        }
+
+        //static void Main(string[] args) // test Graf jak z tresci zadania
+        static void MainS2_3(string[] args) // test Graf jak z tresci zadania
+        {
+            //odp {0, 1, 3, 4}
+            int n = 7;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            g.AddEdge(2, 3);
+            g.AddEdge(3, 0);
+            g.AddEdge(0, 4);
+            g.AddEdge(4, 5);
+            g.AddEdge(5, 6);
+            int K = 10;
+            int z = K + 1;
+            int[] s = new[] { 0 };
+            int[] serviceTurnoffDay = new int[] { z, z, 3, z, z, 3, z};
+            var test = new Lab04();
+            test.Stage2(g, K, s, serviceTurnoffDay);
+            //addStage2(new Stage2TestCase(new int[] { 0 }, new int[] { z, z, 3, z, z, 3, z }, g, n, g.EdgeCount, 10, 4, new int[] { 0, 1, 3, 4 }, 1, "Graf jak w treści zadania"));
+        }
+
+        static void Main(string[] args) // Test duże K
+        {
+            //odp {0, 1, 2, 3, 4}  ??? czy odp {1, 2, 3, 4, 0} sie czym rozni?
+            int n = 5;
+            int K = 300000;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            g.AddEdge(2, 3);
+            g.AddEdge(3, 4);
+            g.AddEdge(4, 0);
+            int[] s = new[] { 3 };
+            int[] serviceTurnoffDay = Enumerable.Range(0, n).Select(i => K + 1).ToArray();
+            var test = new Lab04();
+            test.Stage2(g, K, s, serviceTurnoffDay);
+            //addStage2(new Stage2TestCase(new int[] { 3 }, Enumerable.Range(0, n).Select(i => K + 1).ToArray(), g, n, g.EdgeCount, K, 5, new int[] { 1, 2, 3, 4, 0 }, 1, "Test duże K"));
+            //addStage2(new Stage2TestCase(new int[] { 3 }, Enumerable.Range(0, n).Select(i => K + 1).ToArray(), g, n, g.EdgeCount, K, 5, new int[] { 1, 2, 3, 4, 0 }, 1, "Test duże K"));
+            
+        }
         //Stage 3:
         static void Main1(string[] args)
         {
