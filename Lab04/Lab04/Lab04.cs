@@ -90,7 +90,7 @@ namespace ASD
             foreach (var sn in s)
             {
                 /*
-                if (serviceTurnoffDay[sn] >= 1)
+                if (serviceTurnoffDay[sn] >= 1) //blad w testach losowych w Etapie2 ( zaczynaja sie od wartosci < 1)
                 {
                 */
                     if(print)
@@ -120,14 +120,13 @@ namespace ASD
                         Console.WriteLine(" NIE przetwarzane.");
                     continue;
                 }
-                //visited[A] = dayAInfected;
                 foreach (var B in G.OutNeighbors(A))
                 {
                     int dayInfectedNeighbor = dayAInfected + 1;
                     /*
                     if (visited[B] != -1 && dayInfectedNeighbor >= visited[B] )
                         continue;
-                        */
+                    */
                     if (serviceTurnoffDay[B] > dayInfectedNeighbor && serviceTurnoffDay[A] > dayInfectedNeighbor)
                         ;
                     else
@@ -202,9 +201,7 @@ namespace ASD
                 if(print)
                     Console.WriteLine($"Enqueu: ({sn}, {1})");
                 q.Enqueue((sn, 1));
-               // visited[sn] = 1;
                 infected[sn] = true;
-                //result.Add(sn);
             }
 
             if(print)
@@ -220,11 +217,13 @@ namespace ASD
                     visited[A] = dayAInfected;
                 }
                 else continue;
-                visited[A] = dayAInfected;
                 foreach (var B in G.OutNeighbors(A))
                 {
-                    if(visited[B] > 0) continue;
                     int dayInfectedNeighbor = dayAInfected + 1;
+                    /*
+                    if (visited[B] != -1 && dayInfectedNeighbor >= visited[B] )
+                        continue;
+                    */
                     if ((serviceTurnonDay[A]+1<serviceTurnoffDay[B]) 
                         || (serviceTurnonDay[B]+1<serviceTurnoffDay[A]))
                     {
@@ -251,25 +250,6 @@ namespace ASD
                        if (dayInfectedNeighbor < DiMin) ;
                        else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, DiMax + 1);
                     }
-                    /*
-                    if (dayInfectedNeighbor < serviceTurnoffDay[A])
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        dayInfectedNeighbor =Math.Max(serviceTurnonDay[A] + 1, dayInfectedNeighbor);
-                    }
-
-                    if (dayInfectedNeighbor < serviceTurnoffDay[B])
-                    {
-                        ;
-                    }
-                    else if (dayInfectedNeighbor <= serviceTurnonDay[B])
-                    {
-                        dayInfectedNeighbor = Math.Max(serviceTurnonDay[B] + 1, dayInfectedNeighbor);
-                    }
-                    */
 
                     if (dayInfectedNeighbor > K)
                         continue;
