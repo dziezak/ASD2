@@ -69,9 +69,10 @@ namespace ASD
         /// numberOfInfectedServices: liczba zainfekowanych serwisów,
         /// listOfInfectedServices: tablica zawierająca numery zainfekowanych serwisów w kolejności rosnącej.
         /// </returns>
+        ///  w kolejce trzymamy: ( numer_service, dzien_w_ktorym_jest_zarazony)
         public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage2(Graph G, int K, int[] s, int[] serviceTurnoffDay)
         {
-            bool print = true;
+            bool print = false;
             int n = G.VertexCount;
             bool[] infected = new bool[n];
             int[] visited = new int[n];
@@ -88,13 +89,15 @@ namespace ASD
                 Console.Write("Wrzucamy na poczatku:");
             foreach (var sn in s)
             {
+                /*
                 if (serviceTurnoffDay[sn] >= 1)
                 {
+                */
                     if(print)
                         Console.WriteLine($"({sn}, {1})");
                     q.Enqueue((sn, 1));
                     infected[sn] = true;
-                }
+                //}
             }
 
             if(print)
@@ -103,29 +106,43 @@ namespace ASD
             while (q.Count > 0)
             {
                 var (A, dayAInfected) = q.Dequeue();
+                if(print)
+                    Console.Write($"Dequeue: ({A}, {dayAInfected})");
                 if (visited[A] == -1 || dayAInfected < visited[A])
                 {
                     visited[A] = dayAInfected;
+                    if(print)
+                        Console.WriteLine(" przetwarzane");
                 }
-                else continue;
-                if(print)
-                    Console.WriteLine($"Dequeue: ({A}, {dayAInfected})");
+                else
+                {
+                    if(print)
+                        Console.WriteLine(" NIE przetwarzane.");
+                    continue;
+                }
+                //visited[A] = dayAInfected;
                 foreach (var B in G.OutNeighbors(A))
                 {
-                    if(visited[B] > 0) continue; 
                     int dayInfectedNeighbor = dayAInfected + 1;
+                    /*
+                    if (visited[B] != -1 && dayInfectedNeighbor >= visited[B] )
+                        continue;
+                        */
                     if (serviceTurnoffDay[B] > dayInfectedNeighbor && serviceTurnoffDay[A] > dayInfectedNeighbor)
+                        ;
+                    else
+                        continue;
+                    
+                    if(dayInfectedNeighbor > K)
+                        continue;
+                    
+                    if (visited[B] == -1 || dayInfectedNeighbor < visited[B] )
                     {
-                        if (visited[B] == -1 || dayInfectedNeighbor < visited[B])
-                        {
-                            visited[B] = dayInfectedNeighbor;
-                            infected[B] = true;
-                            if(print)
-                                Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
-                            q.Enqueue((B, dayInfectedNeighbor));
-                        }
+                        infected[B] = true;
+                        if(print)
+                            Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
+                        q.Enqueue((B, dayInfectedNeighbor));
                     }
-                        
                 }
             }
 

@@ -156,7 +156,7 @@ namespace ASD
             //addStage2(new Stage2TestCase(new int[] { 0 }, new int[] { z, z, 3, z, z, 3, z }, g, n, g.EdgeCount, 10, 4, new int[] { 0, 1, 3, 4 }, 1, "Graf jak w treści zadania"));
         }
 
-        static void Main(string[] args) // Test duże K
+        static void MainS2_4(string[] args) // Test duże K
         {
             //odp {0, 1, 2, 3, 4}  ??? czy odp {1, 2, 3, 4, 0} sie czym rozni?
             int n = 5;
@@ -452,6 +452,70 @@ namespace ASD
             test.Stage3(g, K, s, serviceTurnoffDay, serviceTurnonDay);
             //odp: {0, 1, 2}
             //addStage3(new Stage3TestCase(new int[] { 0, 2 }, new int[] { 1, 1, K + 1 }, new int[] { 1, 2, K + 1 }, g, n, g.EdgeCount, K, 3, new int[] { 0, 1, 2 }, 1, "Test linia v5"));
+        }
+        static void Main8(string[] args)
+        {
+            int n = 8;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 2);
+            g.AddEdge(2, 3);
+            g.AddEdge(3, 4);
+            g.AddEdge(4, 5);
+            g.AddEdge(5, 0);
+            g.AddEdge(6, 3);
+            g.AddEdge(7, 6);
+            //g.AddEdge(0, 3);
+            
+            int K = 5;
+            int[] s = new int[] { 0,6, 7};
+            int[] serviceTurnoffDay = new int[] {3, 5, 6, 5, 6, 5, 6, 6};
+            var test = new Lab04();
+            test.Stage2(g, K, s, serviceTurnoffDay);
+            //odp: {0, 1, 2}
+            //addStage3(new Stage3TestCase(new int[] { 0, 2 }, new int[] { 1, 1, K + 1 }, new int[] { 1, 2, K + 1 }, g, n, g.EdgeCount, K, 3, new int[] { 0, 1, 2 }, 1, "Test linia v5"));
+        }
+
+        static void Main9(string[] args) // wiatrak
+        {
+            
+            int n = 25;
+            int K = 4;
+            Graph g = new Graph(n);
+            g.AddEdge(0, 1);
+            g.AddEdge(1, 6);
+            g.AddEdge(6, 14);
+            g.AddEdge(14, 15);
+            g.AddEdge(1, 5);
+            g.AddEdge(5, 13);
+            g.AddEdge(13, 15);
+            g.AddEdge(0, 2);
+            g.AddEdge(2, 7);
+            g.AddEdge(7, 16);
+            g.AddEdge(16, 18);
+            g.AddEdge(2, 8);
+            g.AddEdge(8, 17);
+            g.AddEdge(17, 18);
+            g.AddEdge(0, 4);
+            g.AddEdge(4, 9);
+            g.AddEdge(9, 19);
+            g.AddEdge(19, 21);
+            g.AddEdge(4, 10);
+            g.AddEdge(10, 20);
+            g.AddEdge(20, 21);
+            g.AddEdge(0, 3);
+            g.AddEdge(3, 11);
+            g.AddEdge(11, 22);
+            g.AddEdge(22, 24);
+            g.AddEdge(3, 12);
+            g.AddEdge(12, 23);
+            g.AddEdge(23, 24);
+            int[] s = new int[] { 0 };
+            int[] serviceTurnoffDay =
+                Enumerable.Range(0, n).Select(x => x == 3 || x == 4 || x == 1 ? 2 : K + 1).ToArray();
+            var test = new Lab04();
+            test.Stage2(g, K, s, serviceTurnoffDay);
+            //odp { 0, 2, 7, 8, 16, 17 }
         }
     }
 }
