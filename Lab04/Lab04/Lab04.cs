@@ -30,17 +30,17 @@ namespace ASD
 
             q.Enqueue((s, 1));
 
-            while(q.Count > 0)
+            while (q.Count > 0)
             {
                 var (i, daysPassed) = q.Dequeue();
                 visited[i] = true;
-                if(daysPassed < K)
+                if (daysPassed < K)
                 {
                     foreach (int v in G.OutNeighbors(i))
                     {
                         if (!visited[v])
                         {
-                            int newDaysPassed = daysPassed+1;
+                            int newDaysPassed = daysPassed + 1;
                             q.Enqueue((v, newDaysPassed));
                         }
                     }
@@ -48,11 +48,12 @@ namespace ASD
             }
 
             List<int> result = new List<int>();
-            for(int j=0; j<n; j++)
+            for (int j = 0; j < n; j++)
             {
                 if (visited[j])
                     result.Add(j);
             }
+
             return (result.Count, result.ToArray());
         }
 
@@ -70,7 +71,8 @@ namespace ASD
         /// listOfInfectedServices: tablica zawierająca numery zainfekowanych serwisów w kolejności rosnącej.
         /// </returns>
         ///  w kolejce trzymamy: ( numer_service, dzien_w_ktorym_jest_zarazony)
-        public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage2(Graph G, int K, int[] s, int[] serviceTurnoffDay)
+        public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage2(Graph G, int K, int[] s,
+            int[] serviceTurnoffDay)
         {
             bool print = false;
             int n = G.VertexCount;
@@ -79,13 +81,13 @@ namespace ASD
             Queue<(int, int)> q = new Queue<(int, int)>();
             List<int> result = new List<int>();
 
-            for (int k=0; k<n; k++)
+            for (int k = 0; k < n; k++)
             {
                 visited[k] = -1;
                 infected[k] = false;
             }
 
-            if(print)
+            if (print)
                 Console.Write("Wrzucamy na poczatku:");
             foreach (var sn in s)
             {
@@ -93,33 +95,34 @@ namespace ASD
                 if (serviceTurnoffDay[sn] >= 1) //blad w testach losowych w Etapie2 ( zaczynaja sie od wartosci < 1)
                 {
                 */
-                    if(print)
-                        Console.WriteLine($"({sn}, {1})");
-                    q.Enqueue((sn, 1));
-                    infected[sn] = true;
+                if (print)
+                    Console.WriteLine($"({sn}, {1})");
+                q.Enqueue((sn, 1));
+                infected[sn] = true;
                 //}
             }
 
-            if(print)
+            if (print)
                 Console.WriteLine("Koniec wstawiania.");
-               
+
             while (q.Count > 0)
             {
                 var (A, dayAInfected) = q.Dequeue();
-                if(print)
+                if (print)
                     Console.Write($"Dequeue: ({A}, {dayAInfected})");
                 if (visited[A] == -1 || dayAInfected < visited[A])
                 {
                     visited[A] = dayAInfected;
-                    if(print)
+                    if (print)
                         Console.WriteLine(" przetwarzane");
                 }
                 else
                 {
-                    if(print)
+                    if (print)
                         Console.WriteLine(" NIE przetwarzane.");
                     continue;
                 }
+
                 foreach (var B in G.OutNeighbors(A))
                 {
                     int dayInfectedNeighbor = dayAInfected + 1;
@@ -131,14 +134,14 @@ namespace ASD
                         ;
                     else
                         continue;
-                    
-                    if(dayInfectedNeighbor > K)
+
+                    if (dayInfectedNeighbor > K)
                         continue;
-                    
-                    if (visited[B] == -1 || dayInfectedNeighbor < visited[B] )
+
+                    if (visited[B] == -1 || dayInfectedNeighbor < visited[B])
                     {
                         infected[B] = true;
-                        if(print)
+                        if (print)
                             Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
                         q.Enqueue((B, dayInfectedNeighbor));
                     }
@@ -150,8 +153,8 @@ namespace ASD
                 if (infected[j])
                     result.Add(j);
             }
-            
-            if(print)
+
+            if (print)
                 foreach (var i in result)
                     Console.Write($"{i}, ");
 
@@ -177,89 +180,100 @@ namespace ASD
         /// czyli jesli mialby byc zarazony w ten czas to nie zaraza
         /// jesli byl zarazony i jest zatrzymany to przestaje zarazac teraz i bedzie zarazac dopiero w serviceTurnonday[v]+1 ( bo wlaczenie jest na koniec)
         ///  w kolejce trzymamy: ( numer_service, dzien_w_ktorym_jest_zarazony)
-        ///  
-        public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage3(Graph G, int K, int[] s, int[] serviceTurnoffDay, int[] serviceTurnonDay)
+        public (int numberOfInfectedServices, int[] listOfInfectedServices) Stage3(Graph G, int K, int[] s,
+            int[] serviceTurnoffDay, int[] serviceTurnonDay)
         {
             bool print = false;
             int n = G.VertexCount;
             bool[] infected = new bool[n];
             int[] visited = new int[n];
             List<int> result = new List<int>();
-            Queue<(int, int)> q = new Queue<(int, int)>();
+            Queue<int>[] q = new Queue<int>[K + 1];
 
-            for (int k=0; k<n; k++)
+            for (int i = 0; i <= K; i++)
             {
-                visited[k] = -1;
-                infected[k] = false;
+                q[i] = new Queue<int>();
             }
 
-            if(print)
+
+            for (int i = 0; i < n; i++)
+            {
+                visited[i] = -1;
+                infected[i] = false;
+            }
+
+            if (print)
                 Console.Write("Wrzucamy na poczatku:");
-            
+
             foreach (var sn in s)
             {
-                if(print)
+                if (print)
                     Console.WriteLine($"Enqueu: ({sn}, {1})");
-                q.Enqueue((sn, 1));
+                q[1].Enqueue(sn);
                 infected[sn] = true;
             }
 
-            if(print)
+
+            if (print)
                 Console.WriteLine("Koniec wstawiania.");
-               
-            while (q.Count > 0)
+
+            for (int day = 1; day < K + 1; day++)
             {
-                var (A, dayAInfected) = q.Dequeue();
-                if(print)
-                    Console.WriteLine($"Dequeue: ({A}, {dayAInfected})");
-                if (visited[A] == -1 || dayAInfected < visited[A])
+                while (q[day].Count > 0)
                 {
-                    visited[A] = dayAInfected;
-                }
-                else continue;
-                foreach (var B in G.OutNeighbors(A))
-                {
-                    int dayInfectedNeighbor = dayAInfected + 1;
-                    /*
-                    if (visited[B] != -1 && dayInfectedNeighbor >= visited[B] )
-                        continue;
-                    */
-                    if ((serviceTurnonDay[A]+1<serviceTurnoffDay[B]) 
-                        || (serviceTurnonDay[B]+1<serviceTurnoffDay[A]))
+                    var A = q[day].Dequeue();
+                    if (print)
+                        Console.WriteLine($"Dequeue: ({A}, {day})");
+                    if (visited[A] == -1)
                     {
-                        if (serviceTurnonDay[A]+1<serviceTurnoffDay[B])
+                        visited[A] = day;
+                    }
+                    else continue;
+
+                    foreach (var B in G.OutNeighbors(A))
+                    {
+                        int dayInfectedNeighbor = day + 1;
+
+                        //if (visited[B] != -1 && dayInfectedNeighbor >= visited[B] )
+                        //    continue;
+
+                        if ((serviceTurnonDay[A] + 1 < serviceTurnoffDay[B])
+                            || (serviceTurnonDay[B] + 1 < serviceTurnoffDay[A]))
                         {
-                            if (dayInfectedNeighbor < serviceTurnoffDay[A]) ;
-                            else if (dayInfectedNeighbor < serviceTurnonDay[B])
-                                dayInfectedNeighbor = Math.Max(dayInfectedNeighbor , serviceTurnonDay[A] + 1);
-                            else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[B] + 1);
+                            if (serviceTurnonDay[A] + 1 < serviceTurnoffDay[B])
+                            {
+                                if (dayInfectedNeighbor < serviceTurnoffDay[A]) ;
+                                else if (dayInfectedNeighbor < serviceTurnonDay[B])
+                                    dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[A] + 1);
+                                else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[B] + 1);
+                            }
+
+                            if (serviceTurnonDay[B] + 1 < serviceTurnoffDay[A])
+                            {
+                                if (dayInfectedNeighbor < serviceTurnoffDay[B]) ;
+                                else if (dayInfectedNeighbor < serviceTurnonDay[A])
+                                    dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[B] + 1);
+                                else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, serviceTurnonDay[A] + 1);
+                            }
+                        }
+                        else
+                        {
+                            int DiMin = Math.Min(serviceTurnoffDay[A], serviceTurnoffDay[B]);
+                            int DiMax = Math.Max(serviceTurnonDay[A], serviceTurnonDay[B]);
+                            if (dayInfectedNeighbor < DiMin) ;
+                            else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, DiMax + 1);
                         }
 
-                        if (serviceTurnonDay[B] + 1 < serviceTurnoffDay[A])
+                        if (dayInfectedNeighbor > K)
+                            continue;
+
+                        if (visited[B] == -1) // || dayInfectedNeighbor < visited[B])
                         {
-                            if (dayInfectedNeighbor < serviceTurnoffDay[B]) ;
-                            else if (dayInfectedNeighbor < serviceTurnonDay[A]) 
-                                dayInfectedNeighbor = Math.Max(dayInfectedNeighbor,serviceTurnonDay[B] + 1);
-                            else dayInfectedNeighbor= Math.Max(dayInfectedNeighbor, serviceTurnonDay[A] + 1);
+                            infected[B] = true;
+                            if (print)
+                                Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
+                            q[dayInfectedNeighbor].Enqueue(B);
                         }
-                    }
-                    else
-                    {
-                       int DiMin=Math.Min(serviceTurnoffDay[A],serviceTurnoffDay[B]);
-                       int DiMax = Math.Max(serviceTurnonDay[A], serviceTurnonDay[B]);
-                       if (dayInfectedNeighbor < DiMin) ;
-                       else dayInfectedNeighbor = Math.Max(dayInfectedNeighbor, DiMax + 1);
-                    }
-
-                    if (dayInfectedNeighbor > K)
-                        continue;
-
-                    if (visited[B] == -1 || dayInfectedNeighbor < visited[B])
-                    {
-                        infected[B] = true;
-                        if(print)
-                            Console.WriteLine($"Enqueu: ({B}, {dayInfectedNeighbor})");
-                        q.Enqueue((B, dayInfectedNeighbor));
                     }
                 }
             }
@@ -279,6 +293,6 @@ namespace ASD
 
             return (result.Count, result.ToArray());
         }
-        
+
     }
 }
