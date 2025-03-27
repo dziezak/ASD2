@@ -133,6 +133,13 @@ namespace ASD
                 return cost[t] == int.MaxValue ? 0 : cost[t];
             }
             
+            // ten algorytm nie zadziala bo musisz sie cofac po wartosciach 
+            // np. 
+            //
+            //
+            //
+            
+            
             void Dijkstra(DiGraph<int> G, Graph<int> C, int s, int t)// Dijkstra, ale nie przekraczamy cost[t];
             {
                 maxCost = FindMin(C, s, t); // bedzie dzialac tylko jesli odpalimy po Findmin
@@ -194,5 +201,8 @@ namespace ASD
             int[] path = GetPath(t);
             return (odl[t], maxCost, path);
         }
+        
+        
     }
+    
 }
