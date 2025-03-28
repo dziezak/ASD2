@@ -104,12 +104,13 @@ namespace ASD
         {
             int[] odl = new int[G.VertexCount];
             int[] father = new int[G.VertexCount];
+            int[] cost = new int[G.VertexCount];
             int maxCost;
             // Ta funkcja jest do poprawy bo G jest skierowany a C jest nieskierowany dlatego przechodzenie po nich nie da zawsze dobrej odpowiedzi
             // np. cykl 0->1->2->3->4->0 z wagami 1 wszedzie s = 0 t = 4 , FindMin powie, że cena jest 1 a powinna byc 4
             int FindMin(Graph<int> C, int s, int t)
             {
-                int[] cost  = new int[C.VertexCount];
+                //int[] cost  = new int[C.VertexCount];
                 var pq = new PriorityQueue<int, int>();
                 for (int i = 0; i < C.VertexCount; i++)
                 {
@@ -136,39 +137,39 @@ namespace ASD
             void Dijkstra(DiGraph<int> G, Graph<int> C, int s, int t)// Dijkstra, ale nie przekraczamy cost[t];
             {
                 maxCost = FindMin(C, s, t); // bedzie dzialac tylko jesli odpalimy po Findmin
-                int[] cost = new int[G.VertexCount];
+                //int[] cost = new int[G.VertexCount];
                 for(int i=0; i<G.VertexCount; i++)
                 {
                     odl[i] = int.MaxValue;
-                    cost[i] = int.MaxValue;
+                    //cost[i] = int.MaxValue;
                     father[i] = -1;
                 }
                 var pq = new PriorityQueue<int, int> ();
                 pq.Insert(s, 0);
                 odl[s] = 0;
-                cost[s] = 0;
+                //cost[s] = 0;
                 while (pq.Count > 0)
                 {
                     int vertex = pq.Extract();
                     int currOdl = odl[vertex];
-                    int currCost = cost[vertex];
+                    //int currCost = cost[vertex];
                     
                     foreach(int neighbor in G.OutNeighbors(vertex))
                     {
                         int edgeWeight = G.GetEdgeWeight(vertex, neighbor);
                         int costWeight = C.GetEdgeWeight(vertex, neighbor);
                         int newOdl = currOdl + edgeWeight + waitTime[neighbor];
-                        int newCost = currCost + costWeight;
+                   //     int newCost = currCost + costWeight;
                         //Console.WriteLine($"Vertex: {vertex}, Neighbor: {neighbor}, EdgeWeight: {edgeWeight}, " +
                         //    $"WaitTime: {waitTime[neighbor]}, NewOdl: {newOdl}, currOdl: {currOdl}, currCost: {currCost}, newCost: {newCost}");
 
                         if (newOdl < odl[neighbor]) // nowa sciezka jest lepsza
                         {
-                            if (newCost <= maxCost) // nowa sciezka ma sens pod wzgledem ceny
+                            if (cost[neighbor] <= maxCost) // nowa sciezka ma sens pod wzgledem ceny
                             {
                                 odl[neighbor] = newOdl;
                                 father[neighbor] = vertex;
-                                cost[neighbor] = newCost;
+                                //cost[neighbor] = newCost;
                                 pq.Insert(neighbor, newOdl);
                             }
                         }
@@ -199,8 +200,7 @@ namespace ASD
             }
             if (path[0] == s && path[path.Length - 1] == t)
                 return (odl[t] - waitTime[t], maxCost, path);
-            else
-                return null;
+            else return null;
         }
         
         
