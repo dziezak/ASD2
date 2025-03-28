@@ -133,13 +133,6 @@ namespace ASD
                 return cost[t] == int.MaxValue ? 0 : cost[t];
             }
             
-            // ten algorytm nie zadziala bo musisz sie cofac po wartosciach 
-            // np. 
-            //
-            //
-            //
-            
-            
             void Dijkstra(DiGraph<int> G, Graph<int> C, int s, int t)// Dijkstra, ale nie przekraczamy cost[t];
             {
                 maxCost = FindMin(C, s, t); // bedzie dzialac tylko jesli odpalimy po Findmin
@@ -172,9 +165,9 @@ namespace ASD
                             $" NewTime: {newTime}, " +
                             $"Current odp[neighbor]: {odp[neighbor]}");*/
 
-                        if (newOdl < odl[neighbor] && odl[neighbor] - odl[currOdl] < newOdl )
+                        if (newOdl < odl[neighbor]) // nowa sciezka jest lepsza
                         {
-                            if (newCost <= maxCost)
+                            if (newCost <= maxCost) // nowa sciezka ma sens pod wzgledem ceny
                             {
                                 odl[neighbor] = newOdl;
                                 father[neighbor] = vertex;
@@ -194,12 +187,15 @@ namespace ASD
                     endOfPath = father[endOfPath];
                 }
                 path.Reverse();
-
                 return path.ToArray();
             }
+            
             Dijkstra(G, C, s, t); // wyznacza nam ojcow
             int[] path = GetPath(t);
-            return (odl[t], maxCost, path);
+            if (path[0] == s && path[path.Length - 1] == t)
+                return (odl[t], maxCost, path);
+            else
+                return null;
         }
         
         
