@@ -159,11 +159,8 @@ namespace ASD
                         int costWeight = C.GetEdgeWeight(vertex, neighbor);
                         int newOdl = currOdl + edgeWeight + waitTime[neighbor];
                         int newCost = currCost + costWeight;
-                        /*Console.WriteLine($"Vertex: {vertex}, Neighbor: {neighbor}, " +
-                            $"CurrTime: {CurrTime}, EdgeWeight: {edgeWeight}, " +
-                            $"WaitTime: {waitTime[neighbor]}," +
-                            $" NewTime: {newTime}, " +
-                            $"Current odp[neighbor]: {odp[neighbor]}");*/
+                        //Console.WriteLine($"Vertex: {vertex}, Neighbor: {neighbor}, EdgeWeight: {edgeWeight}, " +
+                        //    $"WaitTime: {waitTime[neighbor]}, NewOdl: {newOdl}, currOdl: {currOdl}, currCost: {currCost}, newCost: {newCost}");
 
                         if (newOdl < odl[neighbor]) // nowa sciezka jest lepsza
                         {
@@ -171,6 +168,7 @@ namespace ASD
                             {
                                 odl[neighbor] = newOdl;
                                 father[neighbor] = vertex;
+                                cost[neighbor] = newCost;
                                 pq.Insert(neighbor, newOdl);
                             }
                         }
@@ -192,8 +190,15 @@ namespace ASD
             
             Dijkstra(G, C, s, t); // wyznacza nam ojcow
             int[] path = GetPath(t);
+            if (s == t) // brzegowy przypadek 
+            {
+                int[] oddPath = new int[1];
+                oddPath[0] = s;
+                return (0, 0, oddPath);
+                
+            }
             if (path[0] == s && path[path.Length - 1] == t)
-                return (odl[t], maxCost, path);
+                return (odl[t] - waitTime[t], maxCost, path);
             else
                 return null;
         }
