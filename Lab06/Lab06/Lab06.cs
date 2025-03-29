@@ -1,6 +1,6 @@
 using ASD.Graphs;
 using System;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -100,7 +100,7 @@ namespace ASD
         /// <param name="s">Wierzchołek startowy (początek trasy).</param>
         /// <param name="t">Wierzchołek końcowy (koniec trasy).</param>
         /// <returns>Pierwszy element krotki to długość trasy w minutach. Drugi element to koszt przebycia trasy w złotych. Trzeci element to droga będąca rozwiązaniem: sekwencja odwiedzanych wierzchołków (zawierająca zarówno wierzchołek początkowy, jak i końcowy). Jeśli szukana trasa nie istnieje, funkcja zwraca `null`.</returns>
-        public (int l, int c, int[] path)? Stage2(DiGraph<int> G, Graph<int> C, int[] waitTime, int s, int t)
+        /*public (int l, int c, int[] path)? Stage2(DiGraph<int> G, Graph<int> C, int[] waitTime, int s, int t)
         {
             int[] odl = new int[G.VertexCount];
             int[] father = new int[G.VertexCount];
@@ -113,7 +113,7 @@ namespace ASD
                 var pq = new PriorityQueue<int, int>();
                 for (int i = 0; i < C.VertexCount; i++)
                 {
-                    cost[i] = int.MaxValue; 
+                    cost[i] = int.MaxValue;
                 }
                 pq.Insert(s, 0);
                 cost[s] = 0;
@@ -132,7 +132,7 @@ namespace ASD
                 }
                 return cost[t] == int.MaxValue ? 0 : cost[t];
             }
-            
+
             void Dijkstra(DiGraph<int> G, Graph<int> C, int s, int t)// Dijkstra, ale nie przekraczamy cost[t];
             {
                 maxCost = FindMin(C, s, t); // bedzie dzialac tylko jesli odpalimy po Findmin
@@ -152,7 +152,7 @@ namespace ASD
                     int vertex = pq.Extract();
                     int currOdl = odl[vertex];
                     int currCost = cost[vertex];
-                    
+
                     foreach(int neighbor in G.OutNeighbors(vertex))
                     {
                         int edgeWeight = G.GetEdgeWeight(vertex, neighbor);
@@ -187,20 +187,13 @@ namespace ASD
                 path.Reverse();
                 return path.ToArray();
             }
-            
+
             Dijkstra(G, C, s, t); // wyznacza nam ojcow
             int[] path = GetPath(t);
-            
-            /*
-            Console.Write("Path: ");
-            for (int i = 0; i < path.Length; i++)
-            {
-                Console.Write($"{path[i]}, ");
-            }
-            Console.WriteLine();
-            */
-            
-            if (s == t) // brzegowy przypadek 
+
+
+
+            if (s == t) // brzegowy przypadek
             {
                 int[] oddPath = new int[1];
                 oddPath[0] = s;
@@ -210,9 +203,111 @@ namespace ASD
                 return (odl[t] - waitTime[t], maxCost, path);
             else
                 return null;
+        }*/
+        public struct PriorityEntry : IComparable<PriorityEntry>
+        {
+            public int Cost { get; }
+            public int Time { get; }
+
+            public PriorityEntry(int cost, int time)
+            {
+                Cost = cost;
+                Time = time;
+            }
+
+            public int CompareTo(PriorityEntry other)
+            {
+                if (Cost != other.Cost)
+                    return Cost.CompareTo(other.Cost);
+                return Time.CompareTo(other.Time);
+            }
         }
-        
-        
+
+        public class PriorityEntryComparer : Comparer<PriorityEntry>
+        {
+            public override int Compare(PriorityEntry x, PriorityEntry y)
+            {
+                if (x.Cost != y.Cost)
+                   return x.Cost.CompareTo(y.Cost); 
+                return x.Time.CompareTo(y.Time);
+            }
+        }
+
+        /*
+        public (int l, int c, int[] path)? Stage2(DiGraph<int> G, Graph<int> C, int[] waitTime, int s, int t)// zabawa
+        {
+            //var pq = new ASD.PriorityQueue<int, PriorityEntry>(); // kompiluje sie ale bez sensu
+            var pq = new ASD.PriorityQueue<PriorityEntry, int>(new PriorityEntryComparer());
+
+            var firstPriorityEntry = new PriorityEntry(0, 1);
+            var secondPriorityEntry = new PriorityEntry(0, 2);
+            var thrirdPriorityEntry = new PriorityEntry(1, 0);
+            pq.Insert(s+1, secondPriorityEntry);
+            pq.Insert(s+2, thrirdPriorityEntry);
+            pq.Insert(s, firstPriorityEntry);
+            while (pq.Count > 0)
+            {
+                int vertex = pq.Extract();
+                Console.WriteLine(vertex);
+            }
+
+            return null;
+        }
+        */
+        public (int l, int c, int[] path)? Stage2(DiGraph<int> G, Graph<int> C, int[] waitTime, int s, int t)
+        {
+            int n = G.VertexCount;
+            PriorityEntry[] best = new PriorityEntry[n];
+            int[] parent = new int[n];
+            var pq = new ASD.PriorityQueue<PriorityEntry, int>(new PriorityEntryComparer());
+
+            for (int i = 0; i < n; i++)
+            {
+                best[i] = new PriorityEntry(int.MaxValue, int.MaxValue); 
+                parent[i] = -1;
+            }
+
+            best[s] = new PriorityEntry(0, 0);
+            pq.Insert(s, new PriorityEntry(0, 0));
+
+            while (pq.Count > 0)
+            {
+               int vertex = pq.Extract(); 
+               PriorityEntry info = best[vertex];
+
+               foreach (int neighbor in G.OutNeighbors(vertex))
+               {
+                   int edgeCost = C.GetEdgeWeight(vertex, neighbor);
+                   int edgeTime = G.GetEdgeWeight(vertex, neighbor);
+                   int newCost = info.Cost + edgeCost;
+                   int newTime = info.Time + edgeTime + waitTime[neighbor]; // bo tutaj czekamy jeszcze w kolejce na przystanku
+                   PriorityEntry neighborInfo = new PriorityEntry(newCost, newTime);
+
+                   if (neighborInfo.CompareTo(best[neighbor]) < 0) // jak uzyc compaer?
+                   {
+                       best[neighbor] = neighborInfo;
+                       parent[neighbor] = vertex;
+                       pq.Insert(neighbor, neighborInfo);
+                   }
+               }
+            }
+
+            if (best[t].Cost == int.MaxValue) return null; // nie ma sciezki
+            
+            List<int> path = new List<int>();
+            int v = t;
+            while (v > -1)
+            {
+                path.Add(v);
+                v = parent[v];
+            }
+            //path.Add(v);
+            path.Reverse();
+            
+            if (s == t) return (0, 0, path.ToArray());
+            return (best[t].Time - waitTime[t], best[t].Cost, path.ToArray());
+        }
+
     }
     
 }
