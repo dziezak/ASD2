@@ -141,7 +141,7 @@ namespace ASD
             var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
            
             List<int> savedMachines = new List<int>();
-            //TOCHECK 
+            //TOCHECK  HERE:
             for (int i = 0; i < numMachines; i++)
             {
                 int cellNodeOut = numMachines + (MachinePos[i].row * w + MachinePos[i].col) * 2 + 1;
