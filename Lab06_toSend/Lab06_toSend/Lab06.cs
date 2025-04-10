@@ -22,16 +22,16 @@ namespace ASD
             int[] father = new int[G.VertexCount];
             int time = 0; // l
             int end = -1; // t
-            void Dijkstra(DiGraph<int> G, int[] waitTime, int s)
+            void Dijkstra(DiGraph<int> G1, int[] waitTime1, int s1)
             {
-                for(int i=0; i<G.VertexCount; i++)
+                for(int i=0; i<G1.VertexCount; i++)
                 {
                     odp[i] = int.MaxValue;
                     father[i] = -1;
                 }
                 var pq = new PriorityQueue<int, int> ();
-                pq.Insert(s, 0);
-                odp[s] = 0;
+                pq.Insert(s1, 0);
+                odp[s1] = 0;
 
                 while (pq.Count > 0)
                 {
@@ -41,7 +41,7 @@ namespace ASD
                     foreach(int neighbor in G.OutNeighbors(vertex))
                     {
                         int edgeWeight = G.GetEdgeWeight(vertex, neighbor);
-                        int newTime = CurrTime + edgeWeight + waitTime[neighbor];
+                        int newTime = CurrTime + edgeWeight + waitTime1[neighbor];
                         /*Console.WriteLine($"Vertex: {vertex}, Neighbor: {neighbor}, " +
                             $"CurrTime: {CurrTime}, EdgeWeight: {edgeWeight}, " +
                             $"WaitTime: {waitTime[neighbor]}," +
@@ -74,15 +74,15 @@ namespace ASD
                 if(endOfPath != s)
                     time = odp[endOfPath] - waitTime[endOfPath];
 
-                List<int> path = new List<int> ();
+                List<int> path1 = new List<int> ();
                 while(endOfPath != -1)
                 {
-                    path.Add(endOfPath);
+                    path1.Add(endOfPath);
                     endOfPath = father[endOfPath];
                 }
-                path.Reverse();
+                path1.Reverse();
 
-                return path.ToArray();
+                return path1.ToArray();
             }
 
             //Sam program
