@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace ASD
 {
@@ -87,7 +88,6 @@ namespace ASD
         /// <returns>Pierwszy element kroki to najwiekszy mozliwy zysk, drugi to tablica indeksow maszyn, ktorych wyprowadzenie maksymalizuje zysk</returns>
         public (int bestProfit, int[] Saved) Stage2(int[,] P, (int row, int col)[] MachinePos, int[] MachineValue, int moveCost)
         {
-            ///TUTAJ JEST JAKIS NETWORK A nie graph
 			int h = P.GetLength(0);
             int w = P.GetLength(1);
 
@@ -96,7 +96,6 @@ namespace ASD
             int totalVerticles = numMachines + 2 * h * w + 2;
             int source = totalVerticles - 2;
             int sink = totalVerticles - 1;
-            //DiGraph<int> grap = new DiGraph<int>(totalVerticles);
             NetworkWithCosts<int, int> network = new NetworkWithCosts<int, int>(totalVerticles);
 
             for (int i = 0; i < numMachines; i++)
@@ -105,12 +104,9 @@ namespace ASD
                 int machineNode = i;
                 int cellNodeIn = numMachines + (row * w + col) * 2;
                 int cellNodeOut = cellNodeIn + 1;
-
                
-                //int cost = P[row, col] + moveCost; // dodane
-                network.AddEdge(source, machineNode,(1, 0)); // moze ujemne
-                network.AddEdge(machineNode, cellNodeIn, (1, 0)); // mozje ujemne?
-                //network.AddEdge(cellNodeIn, cellNodeOut, (cost, 0)); // dodajen
+                network.AddEdge(source, machineNode,(1, -MachineValue[i]));
+                network.AddEdge(machineNode, cellNodeIn, (1, 0));
             }
 
             int[] directionsX = { -1, 1, 0, 0 };
@@ -122,7 +118,7 @@ namespace ASD
                 {
                     int cellNodeIn = numMachines + (row * w + col) * 2;
                     int cellNodeOut = cellNodeIn + 1;
-                    network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], moveCost));
+                    network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
 
                     for (int i = 0; i < 4; i++)
                     {
@@ -130,39 +126,42 @@ namespace ASD
                         int newCol = col + directionsY[i];
                         if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w)
                         {
-                            int neighborNodeIN = numMachines + (newRow * w + newCol) * 2;
-                            int neighborNodeOut = neighborNodeIN + 1;
-                            network.AddEdge(cellNodeOut, neighborNodeIN, (P[row, col], moveCost));
+                            int neighborNodeIn = numMachines + (newRow * w + newCol) * 2;
+                            int neighborNodeOut = neighborNodeIn + 1;
+                            network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
                         }
                     }
                     if (row == 0)
                     {
-                        network.AddEdge(cellNodeOut, sink, (P[row, col], 0));
+                        network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
                     }
                 }
             }
 
-
             var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
            
             List<int> savedMachines = new List<int>();
+            //TOCHECK 
             for (int i = 0; i < numMachines; i++)
             {
-                if (flowGraph.HasEdge(source, i))
-                {
-                    if (flowGraph.GetEdgeWeight(source, i) > 0)
-                        savedMachines.Add(i);
-                }
+                int cellNodeOut = numMachines + (MachinePos[i].row * w + MachinePos[i].col) * 2 + 1;
+                if(flowGraph.HasEdge(source, cellNodeOut))
+                    savedMachines.Add(i);
             }
 
-            int bestProfit = 0;
-            foreach(int machineIndex in savedMachines)
+            if (bestcost < 0)
             {
-                bestProfit += MachineValue[machineIndex];
+                //Console.WriteLine($"\nodpowiedz: {-bestcost}");
+                return (-bestcost, savedMachines.ToArray());
+                     
+            }
+            else
+            {
+                List<int> savedFlow = new List<int>();
+                return (0, savedFlow.ToArray());
             }
             
-
-            return (bestProfit, savedMachines.ToArray());
+            //return (0, savedMachines.ToArray());
         }
     }
 }
