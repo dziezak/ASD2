@@ -29,7 +29,9 @@ namespace ASD
             
             for(int i=0; i<numMachines; i++)
             {
-                var (row, col) = MachinePos[i];
+                //var (row, col) = MachinePos[i];
+                int row = MachinePos[i].row;
+                int col = MachinePos[i].col;
                 int machineNode = i;
                 int cellNodeIn = numMachines + (row * w + col)*2;
                 int cellNodeOut = cellNodeIn + 1;
@@ -115,10 +117,10 @@ namespace ASD
 
             for (int i = 0; i < numMachines; i++)
             {
-                var (row, col) = MachinePos[i];
+                int row = MachinePos[i].row;
+                int col = MachinePos[i].col;
                 int machineNode = i;
                 int cellNodeIn = numMachines + (row * w + col) * 2;
-                int cellNodeOut = cellNodeIn + 1;
                
                 network.AddEdge(source, machineNode,(1, -MachineValue[i]));
                 network.AddEdge(machineNode, cellNodeIn, (1, 0));
@@ -132,10 +134,19 @@ namespace ASD
             {
                 for (int col = 0; col < w; col++)
                 {
-                    int cellNodeIn = numMachines + (row * w + col) * 2;
+                    // optymalizacja
+                    if(P[row, col] <= 0) continue; // tutaj nie ma sensu raczej < 0
+                    
+                    int idx = row * w + col;
+                    int cellNodeIn = numMachines + idx * 2;
                     int cellNodeOut = cellNodeIn + 1;
-                    if(P[row, col] > 0)
-                        network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
+                    
+                    network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
+                    if (row == 0) 
+                    {
+                        network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
+                        continue; // po co rozpatrywac dalej skoro jest juz solve
+                    }
 
                     for (int i = 0; i < 4; i++)
                     {
@@ -144,14 +155,8 @@ namespace ASD
                         if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w)
                         {
                             int neighborNodeIn = numMachines + (newRow * w + newCol) * 2;
-                            if(P[row, col] > 0)
-                                network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
+                            network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
                         }
-                    }
-                    if (row == 0)
-                    {
-                        if(P[row, col] > 0)
-                            network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
                     }
                 }
             }
@@ -173,7 +178,6 @@ namespace ASD
             //printGraph(flowGraph);
            
             List<int> savedMachines = new List<int>();
-            //TOCHECK  HERE:
             /*
             for (int i = 0; i < numMachines; i++)
             {
@@ -208,8 +212,7 @@ namespace ASD
             {
                 return (-bestcost, savedMachines.ToArray());
             }
-            List<int> savedFlow = new List<int>();//pusta lista dla braku oplacalnych maszyn
-            return (0, savedFlow.ToArray());
+            return (0, Array.Empty<int>()); // szybciej
         }
     }
 }
