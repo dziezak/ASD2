@@ -505,7 +505,7 @@ namespace ASD
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main0(string[] args)
         {
             var tests = new Lab06Tests();
             tests.PrepareTestSets();

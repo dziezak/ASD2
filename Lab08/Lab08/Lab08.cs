@@ -2,6 +2,7 @@ using ASD.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -21,10 +22,10 @@ namespace ASD
 
             int numMachines = MachinePos.Length;
 
-            int totalVerticles = numMachines + 2 * h * w + 2;
-            int source = totalVerticles - 2;
-            int sink = totalVerticles - 1;
-            DiGraph<int> grap = new DiGraph<int>(totalVerticles);
+            int totalVertices = numMachines + 2 * h * w + 2;
+            int source = totalVertices - 2;
+            int sink = totalVertices - 1;
+            DiGraph<int> grap = new DiGraph<int>(totalVertices);
             
             for(int i=0; i<numMachines; i++)
             {
@@ -53,9 +54,9 @@ namespace ASD
                         int newRow = row + directionsX[i];
                         int newCol = col + directionsY[i];
                         if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w){
-                            int neighborNodeIN = numMachines + (newRow * w + newCol)*2;
-                            int neighborNodeOut = neighborNodeIN + 1;
-                            grap.AddEdge(cellNodeOut, neighborNodeIN, P[row, col]);
+                            int neighborNodeIn = numMachines + (newRow * w + newCol)*2;
+                            //int neighborNodeOut = neighborNodeIN + 1;
+                            grap.AddEdge(cellNodeOut, neighborNodeIn, P[row, col]);
                         }
                     }
                     if(row == 0)
@@ -86,6 +87,20 @@ namespace ASD
         /// <param name="MachineValue">Tablica zawierajaca informacje o wartosci maszyn</param>
         /// <param name="moveCost">Koszt jednego ruchu</param>
         /// <returns>Pierwszy element kroki to najwiekszy mozliwy zysk, drugi to tablica indeksow maszyn, ktorych wyprowadzenie maksymalizuje zysk</returns>
+
+        public void printGraph(IGraph graph)
+        {
+            for (int u = 0; u < graph.VertexCount; u++)
+            {
+                Console.Write($"{u}: ");
+                foreach (var v in graph.OutNeighbors(u))
+                {
+                    Console.Write($"{v}, ");         
+                }
+                Console.WriteLine();
+            }
+        }
+        
         public (int bestProfit, int[] Saved) Stage2(int[,] P, (int row, int col)[] MachinePos, int[] MachineValue, int moveCost)
         {
 			int h = P.GetLength(0);
@@ -93,10 +108,12 @@ namespace ASD
 
             int numMachines = MachinePos.Length;
 
-            int totalVerticles = numMachines + 2 * h * w + 2;
-            int source = totalVerticles - 2;
-            int sink = totalVerticles - 1;
-            NetworkWithCosts<int, int> network = new NetworkWithCosts<int, int>(totalVerticles);
+            int totalVertices = numMachines + 2 * h * w + 2;
+            //int superSource = totalVertices - 3; // czy to ma sens?
+            int source = totalVertices - 2;
+            int sink = totalVertices - 1;
+            NetworkWithCosts<int, int> network = new NetworkWithCosts<int, int>(totalVertices);
+            //network.AddEdge(superSource, source, (numMachines, 0));
 
             for (int i = 0; i < numMachines; i++)
             {
@@ -127,7 +144,6 @@ namespace ASD
                         if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w)
                         {
                             int neighborNodeIn = numMachines + (newRow * w + newCol) * 2;
-                            int neighborNodeOut = neighborNodeIn + 1;
                             network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
                         }
                     }
@@ -137,31 +153,46 @@ namespace ASD
                     }
                 }
             }
+            
+            
+            for (int u = 0; u < network.VertexCount; u++)
+            {
+                Console.Write($"{u}: ");
+                foreach (var v in network.OutNeighbors(u))
+                {
+                    Console.Write($"{v}, ");         
+                }
+                Console.WriteLine();
+            }
+            
 
+            //var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
             var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
+            //printGraph(flowGraph);
            
             List<int> savedMachines = new List<int>();
             //TOCHECK  HERE:
             for (int i = 0; i < numMachines; i++)
             {
-                int cellNodeOut = numMachines + (MachinePos[i].row * w + MachinePos[i].col) * 2 + 1;
-                if(flowGraph.HasEdge(source, cellNodeOut))
-                    savedMachines.Add(i);
+                //int cellNodeOut = numMachines + (MachinePos[i].row * w + MachinePos[i].col) * 2 + 1;
+                //if(flowGraph.HasEdge(source, i) && flowGraph.GetEdgeWeight(source, i) > 0)
+                if (network.HasEdge(source, i) && flowGraph.HasEdge(source, i))
+                {
+                    int used = network.GetEdgeWeight(source, i).capacity - flowGraph.GetEdgeWeight(source, i);
+                    if (used == 0)
+                    {
+                        savedMachines.Add(i);
+                    }
+                }
             }
 
             if (bestcost < 0)
             {
-                //Console.WriteLine($"\nodpowiedz: {-bestcost}");
                 return (-bestcost, savedMachines.ToArray());
-                     
             }
-            else
-            {
-                List<int> savedFlow = new List<int>();
-                return (0, savedFlow.ToArray());
-            }
-            
-            //return (0, savedMachines.ToArray());
+            //przypadek, że nie ma maszyn dobrych do uratowania
+            List<int> savedFlow = new List<int>();//pusta lista dla braku oplacalnych maszyn
+            return (0, savedFlow.ToArray());
         }
     }
 }
