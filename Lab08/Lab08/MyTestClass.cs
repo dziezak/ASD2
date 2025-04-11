@@ -5,7 +5,7 @@ namespace ASD
 {
     public class MyTestClass
     {
-        static void Main(string[] args)
+        static void Main0(string[] args)
         {
             Console.WriteLine("Przyklad z tresci zadania");
             int[,] P = new int[,]

@@ -109,11 +109,9 @@ namespace ASD
             int numMachines = MachinePos.Length;
 
             int totalVertices = numMachines + 2 * h * w + 2;
-            //int superSource = totalVertices - 3; // czy to ma sens?
             int source = totalVertices - 2;
             int sink = totalVertices - 1;
             NetworkWithCosts<int, int> network = new NetworkWithCosts<int, int>(totalVertices);
-            //network.AddEdge(superSource, source, (numMachines, 0));
 
             for (int i = 0; i < numMachines; i++)
             {
@@ -124,6 +122,7 @@ namespace ASD
                
                 network.AddEdge(source, machineNode,(1, -MachineValue[i]));
                 network.AddEdge(machineNode, cellNodeIn, (1, 0));
+                network.AddEdge(machineNode, sink, (numMachines, MachineValue[i])); // great idea
             }
 
             int[] directionsX = { -1, 1, 0, 0 };
@@ -154,7 +153,7 @@ namespace ASD
                 }
             }
             
-            
+            /*
             for (int u = 0; u < network.VertexCount; u++)
             {
                 Console.Write($"{u}: ");
@@ -164,18 +163,17 @@ namespace ASD
                 }
                 Console.WriteLine();
             }
+            */
             
 
-            //var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
             var (maxFlow, bestcost, flowGraph) = Flows.MinCostMaxFlow(network, source, sink);
             //printGraph(flowGraph);
            
             List<int> savedMachines = new List<int>();
             //TOCHECK  HERE:
+            /*
             for (int i = 0; i < numMachines; i++)
             {
-                //int cellNodeOut = numMachines + (MachinePos[i].row * w + MachinePos[i].col) * 2 + 1;
-                //if(flowGraph.HasEdge(source, i) && flowGraph.GetEdgeWeight(source, i) > 0)
                 if (network.HasEdge(source, i) && flowGraph.HasEdge(source, i))
                 {
                     int used = network.GetEdgeWeight(source, i).capacity - flowGraph.GetEdgeWeight(source, i);
@@ -185,12 +183,28 @@ namespace ASD
                     }
                 }
             }
+            */
+           
+            for (int i = 0; i < numMachines; i++)
+            {
+                if (!flowGraph.HasEdge(i, sink))
+                {
+                    savedMachines.Add(i);
+                }
+            }
+
+            /*
+            Console.WriteLine("Saved mashines:");
+            for (int i = 0; i < savedMachines.Count; i++)
+            {
+                Console.Write($"{savedMachines[i]}: ");
+            }
+            */
 
             if (bestcost < 0)
             {
                 return (-bestcost, savedMachines.ToArray());
             }
-            //przypadek, że nie ma maszyn dobrych do uratowania
             List<int> savedFlow = new List<int>();//pusta lista dla braku oplacalnych maszyn
             return (0, savedFlow.ToArray());
         }
