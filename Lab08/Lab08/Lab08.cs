@@ -142,6 +142,7 @@ namespace ASD
                     int cellNodeOut = cellNodeIn + 1;
                     
                     network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
+                    //optymalizacja 
                     if (row == 0) 
                     {
                         network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
