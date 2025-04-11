@@ -134,7 +134,8 @@ namespace ASD
                 {
                     int cellNodeIn = numMachines + (row * w + col) * 2;
                     int cellNodeOut = cellNodeIn + 1;
-                    network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
+                    if(P[row, col] > 0)
+                        network.AddEdge(cellNodeIn, cellNodeOut, (P[row, col], 0));
 
                     for (int i = 0; i < 4; i++)
                     {
@@ -143,12 +144,14 @@ namespace ASD
                         if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w)
                         {
                             int neighborNodeIn = numMachines + (newRow * w + newCol) * 2;
-                            network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
+                            if(P[row, col] > 0)
+                                network.AddEdge(cellNodeOut, neighborNodeIn, (P[row, col], moveCost));
                         }
                     }
                     if (row == 0)
                     {
-                        network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
+                        if(P[row, col] > 0)
+                            network.AddEdge(cellNodeOut, sink, (P[row, col], moveCost));
                     }
                 }
             }
