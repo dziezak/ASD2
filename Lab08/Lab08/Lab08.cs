@@ -35,7 +35,9 @@ namespace ASD
                 int machineNode = i;
                 int cellNodeIn = numMachines + (row * w + col)*2;
                 int cellNodeOut = cellNodeIn + 1;
-
+					
+			
+	
                 grap.AddEdge(source, machineNode, 1);
                 grap.AddEdge(machineNode, cellNodeIn, 1);
             }
@@ -109,6 +111,11 @@ namespace ASD
             int w = P.GetLength(1);
 
             int numMachines = MachinePos.Length;
+            bool[] deleted = new bool[numMachines];
+            for (int i = 0; i < numMachines; i++)
+            {
+                deleted[i] = false;
+            }
 
             int totalVertices = numMachines + 2 * h * w + 2;
             int source = totalVertices - 2;
@@ -121,7 +128,12 @@ namespace ASD
                 int col = MachinePos[i].col;
                 int machineNode = i;
                 int cellNodeIn = numMachines + (row * w + col) * 2;
-               
+                
+                if(MachineValue[i] <= moveCost * row){
+                    deleted[machineNode] = true;
+                    continue; // Super optymalizacja. Psuje odzyskiwanie maszyn 
+                }
+                 
                 network.AddEdge(source, machineNode,(1, -MachineValue[i]));
                 network.AddEdge(machineNode, cellNodeIn, (1, 0));
                 network.AddEdge(machineNode, sink, (numMachines, MachineValue[i])); // great idea
@@ -195,7 +207,7 @@ namespace ASD
            
             for (int i = 0; i < numMachines; i++)
             {
-                if (!flowGraph.HasEdge(i, sink))
+                if (!flowGraph.HasEdge(i, sink) && deleted[i] == false)
                 {
                     savedMachines.Add(i);
                 }
