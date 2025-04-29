@@ -77,15 +77,14 @@ public class Server {
             // Odesłanie aktualnego stanu gry do TYLKO tego klienta
             var responseJson = JsonSerializer.Serialize(_state);
             await writer.WriteLineAsync(responseJson);
-            BroadcastState();
+            //BroadcastState();
         }
     }
 
     
     private void BroadcastState() {
         var json = JsonSerializer.Serialize(_state);
-        var message = json + "\n";
-        var bytes = Encoding.UTF8.GetBytes(message);
+        var bytes = Encoding.UTF8.GetBytes(json + "\n");
 
         Console.WriteLine($"Liczba graczy {_clients.Count}");
         foreach (var client in _clients) {
