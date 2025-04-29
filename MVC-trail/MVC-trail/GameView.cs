@@ -4,10 +4,10 @@ public class GameView:IGameView
 {
     public void Render(GameState model)
     {
-        Console.Clear();
+        //Console.Clear();
         foreach (Player p in model.Players)
         {
-            Console.WriteLine("Player" + p.Id + ": " + p.Name + " (" + p.X + ")");
+            Console.WriteLine("Player" + p.Id + ": " + p.Name + " (" + p.X + ")" + ", " +" (" +p.Y + ")");
         }
     }
     public void ShowPlayerMoved(Player player, string direction)

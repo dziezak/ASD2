@@ -4,9 +4,6 @@ public class GameController
 {
     private readonly GameState _state;
     private readonly IGameView _view;
-    
-    private readonly IGameView _view2;
-
     public GameController(GameState state, GameView view)
     {
         _state = state;
@@ -39,8 +36,8 @@ public class GameController
        }
        if (direction != null)
        {
-           _view.ShowPlayerMoved(player, direction);
-           _view.ShowPlayerPositions(_state.Players);
+           //_view.ShowPlayerMoved(player, direction);
+           //_view.ShowPlayerPositions(_state.Players);
        }
     }
 }
