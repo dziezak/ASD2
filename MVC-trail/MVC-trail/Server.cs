@@ -75,9 +75,11 @@ public class Server {
             controller.HandleInput(command, playerId);
 
             // Odesłanie aktualnego stanu gry do TYLKO tego klienta
+            /*
             var responseJson = JsonSerializer.Serialize(_state);
             await writer.WriteLineAsync(responseJson);
-            //BroadcastState();
+            */
+            BroadcastState();
         }
     }
 
