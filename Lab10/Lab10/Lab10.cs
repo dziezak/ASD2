@@ -344,17 +344,21 @@ namespace ASD
                     path.Add(v);
 
                     // tylko jeśli jesteśmy w pierwszej połowie
-                    bool inFirstHalf = path.Count <= path.Count / 2;
-                    if (inFirstHalf)
-                        usedColors[col] = usedColors.GetValueOrDefault(col, 0) + 1;
+                    int index = path.Count / 2;
+                    if (path.Count % 2 == 0)
+                    {
+                        int c = color[path[index]];
+                        usedColors[c] = usedColors.GetValueOrDefault(c, 0) + 1;
+                    }
 
                     Backtrack(path, visited, usedColors);
 
-                    if (inFirstHalf)
+                    if (path.Count % 2 == 0)
                     {
-                        usedColors[col]--;
-                        if (usedColors[col] == 0)
-                            usedColors.Remove(col);
+                        int c = color[path[path.Count / 2]];
+                        usedColors[c]--;
+                        if (usedColors[c] == 0)
+                            usedColors.Remove(c);
                     }
 
                     path.RemoveAt(path.Count - 1);
@@ -368,6 +372,7 @@ namespace ASD
                 var path = new List<int> { start };
                 var visited = new HashSet<int> { start };
                 var usedColors = new Dictionary<int, int>();
+                usedColors.Add(0, 0);
 
                 usedColors[color[start]] = 1;
 
