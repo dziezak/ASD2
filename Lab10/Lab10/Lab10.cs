@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace ASD
 {
@@ -79,7 +80,7 @@ namespace ASD
             return longestPath?.ToArray() ?? new int[0];
         }
 
-        public int[] FindLongestRepetitionETAP2(Graph G, int[] color)
+        public int[] FindLongestRepetitionEtap2(Graph G, int[] color)
         {
             int n = color.Length;
             List<int> longestPath = null;
@@ -285,104 +286,139 @@ namespace ASD
 
         //rozwiazanie z dobra iloscia optymalizacji:
         //********************************************************************************************************************************
-        public int[] FindLongestRepetition(Graph G, int[] color)
+       
+        public int[] FindLongestRepetitionIdea(Graph G, int[] color)
         {
             int n = color.Length;
             List<int> longestPath = null;
+            int maxRepetitionLength = 0;
+
+            bool[] visited = new bool[n];
+             
 
             var colorFreq = new Dictionary<int, int>();
-            foreach (int c in color)
-                colorFreq[c] = colorFreq.GetValueOrDefault(c, 0) + 1;
-
-            int maxPossibleLength = 2 * colorFreq.Values.Sum(cnt => cnt / 2);
-
-            void Backtrack(List<int> path, HashSet<int> visited, Dictionary<int, int> usedColors)
-            {
-                int len = path.Count;
-                if (len > maxPossibleLength) return;
-
-                // Sprawdź, czy aktualna ścieżka jest poprawnym wzorcem
-                if (len % 2 == 0 && len > 0)
-                {
-                    int k = len / 2;
-                    bool match = true;
-                    for (int i = 0; i < k; i++)
-                    {
-                        if (color[path[i]] != color[path[k + i]])
-                        {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match && (longestPath == null || len > longestPath.Count))
-                        longestPath = new List<int>(path);
-                }
-
-                // Jeśli użyto zbyt dużo jakiegoś koloru w 1. połowie — przerywamy
-                int half = len / 2;
-                if (len <= maxPossibleLength)
-                {
-                    foreach (var kv in usedColors)
-                    {
-                        if (kv.Value > colorFreq[kv.Key] / 2)
-                            return;
-                    }
-
-                    // optymalizacja – jeśli już zużyliśmy  ponad pół zasobów kolorów, przerywamy
-                    if (usedColors.Values.Sum() > maxPossibleLength / 2)
-                        return;
-                }
-
-                int u = path[len - 1];
-                foreach (int v in G.OutNeighbors(u))
-                {
-                    if (visited.Contains(v)) continue;
-                    int col = color[v];
-                    if (colorFreq[col] == 1) continue;
-
-                    visited.Add(v);
-                    path.Add(v);
-
-                    // tylko jeśli jesteśmy w pierwszej połowie
-                    int index = path.Count / 2;
-                    if (path.Count % 2 == 0)
-                    {
-                        int c = color[path[index]];
-                        usedColors[c] = usedColors.GetValueOrDefault(c, 0) + 1;
-                    }
-
-                    Backtrack(path, visited, usedColors);
-
-                    if (path.Count % 2 == 0)
-                    {
-                        int c = color[path[path.Count / 2]];
-                        usedColors[c]--;
-                        if (usedColors[c] == 0)
-                            usedColors.Remove(c);
-                    }
-
-                    path.RemoveAt(path.Count - 1);
-                    visited.Remove(v);
-                }
+            foreach(int c in color){
+                if (!colorFreq.ContainsKey(c)) colorFreq[c] = 0;
+                colorFreq[c]++;
             }
 
-            for (int start = 0; start < n; start++)
+            for (int i = 0; i < n; i++)
             {
-                if (colorFreq[color[start]] == 1) continue;
-                var path = new List<int> { start };
-                var visited = new HashSet<int> { start };
-                var usedColors = new Dictionary<int, int>();
-                usedColors.Add(0, 0);
-
-                usedColors[color[start]] = 1;
-
-                Backtrack(path, visited, usedColors);
+                for (int j = i + 1; j < n; j++)
+                {
+                    //przechodze po kazdej trasie z jednego wierzchola 
+                        // jesli trasa jest nie mozliwa z tego wierzcholka to koniec tej trasy 
+                        // jesli traca polaczy wierzcholek v_i do v_j  
+                        // jesli trasa obecnie znaleziona jest lepsza ( dluzsza od tego co mielismy wczesniej to nadpisujemy longestPath
+                        
+                }
             }
-
             return longestPath?.ToArray() ?? Array.Empty<int>();
         }
 
+        public int[] FindLongestRepetition(Graph G, int[] color)
+        {
+            void printPaths(List<int> path1, List<int> path2)
+            {
+                Console.Write("Path1:");
+                foreach (var v in path1)
+                {
+                    Console.Write(v + ",");
+                }
+
+                Console.WriteLine();
+                Console.Write("Path2:");
+                foreach (var v in path2)
+                {
+                    Console.Write(v + ",");
+                }
             }
+
+            int n = color.Length;
+            int[] longestPath = new int[0];
+
+            var colorFreq = new Dictionary<int, int>();
+            foreach (int c in color)
+            {
+                if (!colorFreq.ContainsKey(c)) colorFreq[c] = 0;
+                colorFreq[c]++;
+            }
+
+            void FindPath(bool[] visited, List<int> path1, List<int> path2)
+            {
+                int end1 = path1.Last();
+                int end2 = path2.Last();
+
+                if (path1.Count * 2 > longestPath.Length)
+                {
+                    if (G.HasEdge(end1, path2[0]))
+                    {
+                        var sumPath = new List<int>(path1);
+                        sumPath.AddRange(path2);
+                        longestPath = sumPath.ToArray();
+                    }
+
+                    if (G.HasEdge(end2, path1[0]))
+                    {
+                        var sumPath = new List<int>(path2);
+                        sumPath.AddRange(path1);
+                        longestPath = sumPath.ToArray();
+                    }
+                }
+
+
+                foreach (int v in G.OutNeighbors(end1))
+                {
+                    foreach (int u in G.OutNeighbors(end2))
+                    {
+                        if (color[u] == color[v] && visited[u]==false  && visited[v]==false && u!=v)
+                        {
+                            visited[u] = true;
+                            visited[v] = true;
+                            path1.Add(v);
+                            path2.Add(u);
+                            
+                            FindPath(visited, path1, path2);
+                            
+                            visited[u] = false;
+                            visited[v] = false;
+                            path1.Remove(v);
+                            path2.Remove(u);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < n; i++)
+            {
+                if (colorFreq[color[i]] < 2) continue; // nie ma sensu brak kolorów gdzie jest ich mniej niz 2
+
+                for (int j = i+1; j < n; j++) // czy nie j=0?
+                {
+                    if( color[i] != color[j]) continue; //nie ma sensu brac kolorów ponizej 2
+                    var visited = new bool[n];
+                    var path1 = new List<int>(){i};
+                    var path2 = new List<int>(){j};
+                    visited[i] = true;
+                    visited[j] = true;
+                    FindPath(visited, path1, path2);
+                }
+            }
+
+            /*
+            if (longestPath.Length > 0)
+            {
+                foreach(var v in longestPath)
+                {
+                    Console.Write(color[v]+","); 
+                }
+                Console.WriteLine();
+            }
+            */
+            return longestPath?.ToArray() ?? Array.Empty<int>();
         }
+    }
+}
+
+
 
 
