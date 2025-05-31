@@ -142,7 +142,7 @@ namespace ASD
         
         public Tuple<Point, Point> FindClosestPoints(List<Point> points, out double minDistance)
         {
-            minDistance = double.MaxValue;
+            minDistance = double.MaxValue / 2;
             Tuple<Point, Point> closetPair = null;
 
             if (points == null || points.Count < 2)
