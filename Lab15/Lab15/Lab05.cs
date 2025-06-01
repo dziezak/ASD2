@@ -28,10 +28,10 @@ namespace ASD
             int myTime = 0;
             int maxSize = 0;
 
-            int[] dfs_num = new int[n];       // czas wejścia do wierzchołka
-            int[] low = new int[n];           // najniższy dfs_num osiągalny
+            int[] dfs_num = new int[n];       // czas wejscia do wierzcholka
+            int[] low = new int[n];           // najszybszy czas wejscia
             bool[] visited = new bool[n];
-            Stack<(int, int)> edgeStack = new Stack<(int, int)>();  // stos krawędzi
+            Stack<(int, int)> edgeStack = new Stack<(int, int)>();
 
             void DFS(int u, int parent, ref int time)
             {
@@ -49,18 +49,17 @@ namespace ASD
 
                         if (low[v] >= dfs_num[u])
                         {
-                            // Wierzchołek u jest punktem artykulacyjnym – zakończenie komponentu
-                            var component = new HashSet<int>();
+                            var land = new HashSet<int>();
                             (int a, int b) edge;
                             do
                             {
                                 edge = edgeStack.Pop();
-                                component.Add(edge.Item1);
-                                component.Add(edge.Item2);
+                                land.Add(edge.Item1);
+                                land.Add(edge.Item2);
                             } while (!(edge.Item1 == u && edge.Item2 == v));
 
-                            if (component.Count >= 3)  // pomijamy jednoelementowe
-                                maxSize = Math.Max(maxSize, component.Count);
+                            if (land.Count >= 3)  // musimy miec jaka droge mozliwa wiec przynajmniej 3 wiezcholki
+                                maxSize = Math.Max(maxSize, land.Count);
                         }
                         children++;
                     }
