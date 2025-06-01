@@ -93,7 +93,71 @@ namespace ASD
         /// <returns></returns>
         public int VertexInMostProvinces(Graph G)
         {
-            return -1;
+            int n = G.VertexCount;
+            int time = 0;
+            int[] dfs_num = new int[n];
+            int[] low = new int[n];
+            bool[] visited = new bool[n];
+            Stack<(int, int)> edgeStack = new Stack<(int, int)>();
+            int[] count = new int[n];  // licznik krain dla każdego wierzchołka
+
+            void DFS(int u, int parent, ref int t)
+            {
+                visited[u] = true;
+                dfs_num[u] = low[u] = ++t;
+
+                foreach (int v in G.OutNeighbors(u))
+                {
+                    if (!visited[v])
+                    {
+                        edgeStack.Push((u, v));
+                        DFS(v, u, ref t);
+                        low[u] = Math.Min(low[u], low[v]);
+
+                        if (low[v] >= dfs_num[u])
+                        {
+                            var land = new HashSet<int>();
+                            (int a, int b) edge;
+                            do
+                            {
+                                edge = edgeStack.Pop();
+                                land.Add(edge.a);
+                                land.Add(edge.b);
+                            } while (!(edge.a == u && edge.b == v));
+
+                            if (land.Count >= 3)  // kraina to co najmniej 3 wierzchołki
+                            {
+                                foreach (var node in land)
+                                    count[node]++;
+                            }
+                        }
+                    }
+                    else if (v != parent && dfs_num[v] < dfs_num[u])
+                    {
+                        edgeStack.Push((u, v));
+                        low[u] = Math.Min(low[u], dfs_num[v]);
+                    }
+                }
+            }
+
+            for (int i = 0; i < n; i++)
+                if (!visited[i])
+                    DFS(i, -1, ref time);
+
+            // Znajdź wierzchołek o największym count, w razie remisu najmniejszy indeks
+            int bestVertex = -1;
+            int maxCount = -1;
+            for (int i = 0; i < n; i++)
+            {
+                if (count[i] > maxCount)
+                {
+                    maxCount = count[i];
+                    bestVertex = i;
+                }
+            }
+
+            return bestVertex;
         }
+ 
     }
 }
